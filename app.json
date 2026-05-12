@@ -27,6 +27,12 @@
       "favicon": "./assets/images/favicon.png"
     },
     "plugins": [
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Autorisez AGRO à utiliser la caméra pour analyser les feuilles et détecter les maladies."
+        }
+      ],
       "expo-router",
       [
         "expo-splash-screen",

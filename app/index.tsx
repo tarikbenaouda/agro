@@ -269,8 +269,14 @@ export default function HomeScreen() {
               <TouchableOpacity
                 style={styles.centerButton}
                 activeOpacity={0.85}
+                onPress={() => router.push("/leaf-scan")}
+                accessibilityLabel="Analyser une feuille avec la caméra"
               >
-                <Ionicons name="add" size={30} color="#ffffff" />
+                <MaterialCommunityIcons
+                  name="leaf-circle-outline"
+                  size={32}
+                  color="#ffffff"
+                />
               </TouchableOpacity>
             </View>
 
