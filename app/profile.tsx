@@ -37,7 +37,7 @@ export default function ProfileScreen() {
             style={styles.avatar}
           />
           <Text style={styles.name}>Abdenour Mahmoud</Text>
-          <Text style={styles.subtitle}>Exploitante · Relizane, Algérie</Text>
+          <Text style={styles.subtitle}>Exploitant · Relizane, Algérie</Text>
 
           <View style={styles.statsRow}>
             <View style={styles.statItem}>
