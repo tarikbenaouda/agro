@@ -114,7 +114,7 @@ export default function HomeScreen() {
                 size={20}
                 color={stylesData.primary}
               />
-              <Text style={styles.brandText}>AGO APP</Text>
+              <Text style={styles.brandText}>AGRO APP</Text>
             </View>
 
             <TouchableOpacity
