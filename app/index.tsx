@@ -34,7 +34,7 @@ const CROP_CARDS: CropCard[] = [
   },
   {
     title: "Les arbres fruitiers",
-    status: "Oliviers & Orangers",
+    status: "2 cultures",
     image: require("../assets/images/oranges.jpg"),
     accent: "#2D5A27",
     route: "/fruit-trees",
@@ -133,7 +133,7 @@ export default function HomeScreen() {
           </View>
 
           <View style={styles.greetingBlock}>
-            <Text style={styles.greetingTitle}>Bonjour, Agriculteur! 🍃</Text>
+            <Text style={styles.greetingTitle}>Bonjour, Abdenour! 🍃</Text>
             <Text style={styles.greetingSubtitle}>
               Gérez vos cultures intelligemment
             </Text>
@@ -274,7 +274,11 @@ export default function HomeScreen() {
               </TouchableOpacity>
             </View>
 
-            <TouchableOpacity style={styles.tabItem} activeOpacity={0.8}>
+            <TouchableOpacity
+              style={styles.tabItem}
+              activeOpacity={0.8}
+              onPress={() => router.push("/alertes")}
+            >
               <Ionicons name="warning-outline" size={22} color="#8ca58a" />
               <Text style={styles.tabLabel}>Alertes</Text>
             </TouchableOpacity>

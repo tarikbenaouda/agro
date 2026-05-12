@@ -16,16 +16,14 @@ const TREE_CARDS = [
   {
     title: "Olivier",
     subtitle: "Accéder au calendrier des oliviers",
-    image:
-      "https://images.unsplash.com/photo-1524592094714-0f0654e20314?auto=format&fit=crop&w=900&q=80",
+    image: require("../assets/images/olives.jpg"),
     accent: Colors.oliveAccent,
     route: "/program/olive" as const,
   },
   {
     title: "Oranger",
     subtitle: "Accéder au calendrier des oranges",
-    image:
-      "https://images.unsplash.com/photo-1485518882345-3f1d0f9f7f25?auto=format&fit=crop&w=900&q=80",
+    image: require("../assets/images/oranges.jpg"),
     accent: Colors.orangeAccent,
     route: "/program/orange" as const,
   },
@@ -71,7 +69,14 @@ export default function FruitTreesScreen() {
               activeOpacity={0.86}
               onPress={() => router.push(tree.route)}
             >
-              <Image source={{ uri: tree.image }} style={styles.image} />
+              <Image
+                source={
+                  typeof tree.image === "string"
+                    ? { uri: tree.image }
+                    : tree.image
+                }
+                style={styles.image}
+              />
               <View style={styles.cardBody}>
                 <Text style={styles.cardTitle}>{tree.title}</Text>
                 <Text style={styles.cardSubtitle}>{tree.subtitle}</Text>
