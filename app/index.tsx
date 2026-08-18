@@ -22,7 +22,7 @@ type CropCard = {
   status: string;
   image: string | ImageSourcePropType;
   accent: string;
-  route?: "/program/olive" | "/program/orange" | "/fruit-trees";
+  route?: "/program/olive" | "/program/orange" | "/fruit-trees" | "/cereales";
 };
 
 type WeatherIconName = React.ComponentProps<typeof Ionicons>["name"];
@@ -138,6 +138,7 @@ const CROP_CARDS: CropCard[] = [
     image:
       "https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=900&q=80",
     accent: "#2D5A27",
+    route: "/cereales",
   },
   {
     title: "Les arbres fruitiers",
@@ -282,7 +283,7 @@ export default function HomeScreen() {
   }, []);
 
   const openCrop = (
-    route?: "/program/olive" | "/program/orange" | "/fruit-trees",
+    route?: "/program/olive" | "/program/orange" | "/fruit-trees" | "/cereales",
   ) => {
     if (!route) return;
     router.push(route);
