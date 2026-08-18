@@ -1,7 +1,8 @@
 import { Colors } from "@/constants/colors";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
+import * as Location from "expo-location";
 import { router } from "expo-router";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   Image,
   ImageSourcePropType,
@@ -22,6 +23,112 @@ type CropCard = {
   image: string | ImageSourcePropType;
   accent: string;
   route?: "/program/olive" | "/program/orange" | "/fruit-trees";
+};
+
+type WeatherIconName = React.ComponentProps<typeof Ionicons>["name"];
+
+type WeatherSnapshot = {
+  temperature: string;
+  condition: string;
+  humidity: string;
+  wind: string;
+  todayRange: string;
+  location: string;
+  icon: WeatherIconName;
+  iconColor: string;
+};
+
+const DEFAULT_WEATHER: WeatherSnapshot = {
+  temperature: "--°C",
+  condition: "Météo indisponible",
+  humidity: "--",
+  wind: "--",
+  todayRange: "-- / --",
+  location: "Position indisponible",
+  icon: "cloud-outline",
+  iconColor: "#d8e6d6",
+};
+
+const weatherFromCode = (
+  weatherCode?: number,
+): Pick<WeatherSnapshot, "condition" | "icon" | "iconColor"> => {
+  if (weatherCode == null) {
+    return {
+      condition: "Condition inconnue",
+      icon: "cloud-outline",
+      iconColor: "#d8e6d6",
+    };
+  }
+
+  if (weatherCode === 0) {
+    return { condition: "Ensoleillé", icon: "sunny", iconColor: "#F8C14B" };
+  }
+
+  if ([1, 2].includes(weatherCode)) {
+    return {
+      condition: "Partiellement nuageux",
+      icon: "partly-sunny",
+      iconColor: "#F8C14B",
+    };
+  }
+
+  if (weatherCode === 3 || (weatherCode >= 45 && weatherCode <= 48)) {
+    return {
+      condition: "Nuageux",
+      icon: "cloud",
+      iconColor: "#d8e6d6",
+    };
+  }
+
+  if ((weatherCode >= 51 && weatherCode <= 67) || weatherCode === 80) {
+    return {
+      condition: "Pluie faible",
+      icon: "rainy-outline",
+      iconColor: "#92C5FF",
+    };
+  }
+
+  if ((weatherCode >= 81 && weatherCode <= 82) || weatherCode >= 95) {
+    return {
+      condition: "Pluie forte",
+      icon: "rainy",
+      iconColor: "#92C5FF",
+    };
+  }
+
+  if (weatherCode >= 71 && weatherCode <= 77) {
+    return {
+      condition: "Neige",
+      icon: "snow",
+      iconColor: "#eaf2ff",
+    };
+  }
+
+  return {
+    condition: "Conditions variables",
+    icon: "cloud-outline",
+    iconColor: "#d8e6d6",
+  };
+};
+
+const formatLocationLabel = (
+  reverseGeocode: Location.LocationGeocodedAddress[],
+  lat: number,
+  lon: number,
+): string => {
+  const first = reverseGeocode[0];
+  if (!first) {
+    return `${lat.toFixed(2)}, ${lon.toFixed(2)}`;
+  }
+
+  const city = first.city || first.subregion || first.region;
+  const country = first.country;
+
+  if (city && country) return `${city}, ${country}`;
+  if (city) return city;
+  if (country) return country;
+
+  return `${lat.toFixed(2)}, ${lon.toFixed(2)}`;
 };
 
 const CROP_CARDS: CropCard[] = [
@@ -81,6 +188,98 @@ const DAILY_TASKS = [
 
 export default function HomeScreen() {
   const insets = useSafeAreaInsets();
+  const [weather, setWeather] = useState<WeatherSnapshot>(DEFAULT_WEATHER);
+  const [isWeatherLoading, setIsWeatherLoading] = useState(true);
+
+  useEffect(() => {
+    let mounted = true;
+
+    const loadWeather = async () => {
+      try {
+        const { status } = await Location.requestForegroundPermissionsAsync();
+        if (status !== "granted") {
+          if (!mounted) return;
+          setWeather({
+            ...DEFAULT_WEATHER,
+            condition: "Localisation refusée",
+          });
+          return;
+        }
+
+        const position = await Location.getCurrentPositionAsync({
+          accuracy: Location.Accuracy.Balanced,
+        });
+
+        const { latitude, longitude } = position.coords;
+
+        const [reverseGeocode, weatherResponse] = await Promise.all([
+          Location.reverseGeocodeAsync({ latitude, longitude }),
+          fetch(
+            `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,relative_humidity_2m,wind_speed_10m,weather_code&daily=temperature_2m_max,temperature_2m_min&timezone=auto&forecast_days=1`,
+          ),
+        ]);
+
+        if (!weatherResponse.ok) {
+          throw new Error(`Weather request failed (${weatherResponse.status})`);
+        }
+
+        const payload: {
+          current?: {
+            temperature_2m?: number;
+            relative_humidity_2m?: number;
+            wind_speed_10m?: number;
+            weather_code?: number;
+          };
+          daily?: {
+            temperature_2m_max?: number[];
+            temperature_2m_min?: number[];
+          };
+        } = await weatherResponse.json();
+
+        const current = payload.current;
+        const parsed = weatherFromCode(current?.weather_code);
+
+        if (!mounted) return;
+
+        setWeather({
+          temperature:
+            typeof current?.temperature_2m === "number"
+              ? `${Math.round(current.temperature_2m)}°C`
+              : "--°C",
+          condition: parsed.condition,
+          humidity:
+            typeof current?.relative_humidity_2m === "number"
+              ? `${Math.round(current.relative_humidity_2m)}%`
+              : "--",
+          wind:
+            typeof current?.wind_speed_10m === "number"
+              ? `${Math.round(current.wind_speed_10m)} km/h`
+              : "--",
+          todayRange:
+            typeof payload.daily?.temperature_2m_min?.[0] === "number" &&
+            typeof payload.daily?.temperature_2m_max?.[0] === "number"
+              ? `${Math.round(payload.daily.temperature_2m_min[0])}° / ${Math.round(payload.daily.temperature_2m_max[0])}°`
+              : "-- / --",
+          location: formatLocationLabel(reverseGeocode, latitude, longitude),
+          icon: parsed.icon,
+          iconColor: parsed.iconColor,
+        });
+      } catch {
+        if (!mounted) return;
+        setWeather(DEFAULT_WEATHER);
+      } finally {
+        if (mounted) {
+          setIsWeatherLoading(false);
+        }
+      }
+    };
+
+    void loadWeather();
+
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
   const openCrop = (
     route?: "/program/olive" | "/program/orange" | "/fruit-trees",
@@ -143,25 +342,36 @@ export default function HomeScreen() {
             <View style={styles.weatherTopRow}>
               <View style={styles.weatherLeft}>
                 <View style={styles.weatherIconCircle}>
-                  <Ionicons name="sunny" size={22} color="#F8C14B" />
+                  <Ionicons
+                    name={weather.icon}
+                    size={22}
+                    color={weather.iconColor}
+                  />
                 </View>
                 <View>
-                  <Text style={styles.weatherTemp}>24°C</Text>
-                  <Text style={styles.weatherCondition}>Ensoleillé</Text>
+                  <Text style={styles.weatherTemp}>{weather.temperature}</Text>
+                  <Text style={styles.weatherCondition}>
+                    {isWeatherLoading
+                      ? "Chargement météo..."
+                      : weather.condition}
+                  </Text>
                 </View>
               </View>
 
               <View style={styles.weatherRight}>
-                <Text style={styles.weatherStat}>Humidité: 60%</Text>
-                <Text style={styles.weatherStat}>Vent: 15 km/h</Text>
+                <Text style={styles.weatherStat}>
+                  Humidité: {weather.humidity}
+                </Text>
+                <Text style={styles.weatherStat}>Vent: {weather.wind}</Text>
+                <Text style={styles.weatherStat}>
+                  Min/Max: {weather.todayRange}
+                </Text>
               </View>
             </View>
 
             <View style={styles.locationRow}>
               <Ionicons name="location-sharp" size={15} color="#d9f5d6" />
-              <Text style={styles.locationText}>
-                Relizane (غليزان), Algérie
-              </Text>
+              <Text style={styles.locationText}>{weather.location}</Text>
             </View>
           </View>
 

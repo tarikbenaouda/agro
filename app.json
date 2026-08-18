@@ -33,6 +33,12 @@
           "cameraPermission": "Autorisez AGRO à utiliser la caméra pour analyser les feuilles et détecter les maladies."
         }
       ],
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "Autorisez AGRO à accéder à votre position pour afficher la météo locale."
+        }
+      ],
       "expo-router",
       [
         "expo-splash-screen",
