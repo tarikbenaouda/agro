@@ -11,47 +11,17 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import Animated, {
-  Easing,
-  interpolate,
-  useAnimatedStyle,
-  useSharedValue,
-  withRepeat,
-  withTiming,
-} from "react-native-reanimated";
 import {
   SafeAreaView,
   useSafeAreaInsets,
 } from "react-native-safe-area-context";
 
 const PRIMARY = "#2D5A27";
-const FRAME_H = 288;
 
 export default function LeafScanScreen() {
   const insets = useSafeAreaInsets();
   const [permission, requestPermission] = useCameraPermissions();
   const autoRequestOnce = useRef(false);
-
-  const scanPhase = useSharedValue(0);
-
-  useEffect(() => {
-    scanPhase.value = withRepeat(
-      withTiming(1, {
-        duration: 2400,
-        easing: Easing.inOut(Easing.sin),
-      }),
-      -1,
-      true,
-    );
-  }, [scanPhase]);
-
-  const beamStyle = useAnimatedStyle(() => ({
-    transform: [
-      {
-        translateY: interpolate(scanPhase.value, [0, 1], [20, FRAME_H - 36]),
-      },
-    ],
-  }));
 
   useEffect(() => {
     if (Platform.OS === "web") return;
@@ -118,8 +88,8 @@ export default function LeafScanScreen() {
           <Ionicons name="camera-outline" size={52} color={PRIMARY} />
           <Text style={styles.permissionTitle}>Accès à la caméra</Text>
           <Text style={styles.permissionBodyText}>
-            Autorisez la caméra pour placer une feuille dans le cadre et lancer
-            le balayage (détection IA à venir).
+            Autorisez la caméra pour capturer une plante et préparer une analyse
+            IA.
           </Text>
           <TouchableOpacity
             style={styles.primaryBtn}
@@ -152,23 +122,25 @@ export default function LeafScanScreen() {
           >
             <Ionicons name="chevron-back" size={28} color="#ffffff" />
           </TouchableOpacity>
-          <View style={styles.scanningPill}>
-            <View style={styles.pulseDot} />
-            <Text style={styles.scanningPillText}>Balayage en cours</Text>
+          <View style={styles.aiPill}>
+            <Ionicons name="sparkles-outline" size={14} color="#e6ffe2" />
+            <Text style={styles.aiPillText}>IA</Text>
           </View>
           <View style={styles.toolbarSpacer} />
         </View>
 
-        <View style={styles.centerMeta} pointerEvents="none">
-          <Text style={styles.hint}>Cadrez une feuille nette et bien éclairée</Text>
-          <View style={[styles.scanFrame, { height: FRAME_H }]}>
-            <View style={styles.cornerTL} />
-            <View style={styles.cornerTR} />
-            <View style={styles.cornerBL} />
-            <View style={styles.cornerBR} />
-            <Animated.View style={[styles.scanBeam, beamStyle]} />
-          </View>
-        </View>
+        <View style={styles.centerMeta} pointerEvents="none" />
+
+        <TouchableOpacity
+          style={[
+            styles.floatingAiButton,
+            { bottom: Math.max(insets.bottom, 16) + 128 },
+          ]}
+          activeOpacity={0.85}
+          accessibilityLabel="Détecter santé plante"
+        >
+          <Ionicons name="sparkles" size={24} color="#ffffff" />
+        </TouchableOpacity>
 
         <View
           style={[
@@ -176,10 +148,11 @@ export default function LeafScanScreen() {
             { paddingBottom: Math.max(insets.bottom, 20) },
           ]}
         >
-          <Text style={styles.bottomTitle}>Analyse IA (démo)</Text>
+          <Text style={styles.bottomTitle}>Détection IA plante</Text>
           <Text style={styles.bottomCaption}>
-            La caméra est active et le balayage simulé tourne en boucle. La
-            détection des maladies sera branchée ici plus tard.
+            Appuyez sur le bouton IA pour lancer la détection des maladies et
+            l'état de santé de la plante. Le bouton est visuel uniquement pour
+            le moment.
           </Text>
         </View>
       </View>
@@ -250,22 +223,17 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  scanningPill: {
+  aiPill: {
     flexDirection: "row",
     alignItems: "center",
+    justifyContent: "center",
     gap: 8,
     paddingHorizontal: 14,
     paddingVertical: 8,
     borderRadius: 999,
     backgroundColor: "rgba(0,0,0,0.45)",
   },
-  pulseDot: {
-    width: 8,
-    height: 8,
-    borderRadius: 999,
-    backgroundColor: "#7bed9f",
-  },
-  scanningPillText: {
+  aiPillText: {
     color: "#ffffff",
     fontFamily: "Poppins_600SemiBold",
     fontSize: 13,
@@ -273,87 +241,21 @@ const styles = StyleSheet.create({
   },
   centerMeta: {
     flex: 1,
+  },
+  floatingAiButton: {
+    position: "absolute",
+    right: 20,
+    width: 58,
+    height: 58,
+    borderRadius: 999,
+    backgroundColor: PRIMARY,
     alignItems: "center",
     justifyContent: "center",
-    paddingHorizontal: 24,
-  },
-  hint: {
-    color: "#e8fce8",
-    fontFamily: "Poppins_600SemiBold",
-    fontSize: 14,
-    textAlign: "center",
-    marginBottom: 20,
-    textShadowColor: "rgba(0,0,0,0.65)",
-    textShadowOffset: { width: 0, height: 1 },
-    textShadowRadius: 6,
-  },
-  scanFrame: {
-    width: "88%",
-    maxWidth: 340,
-    borderRadius: 20,
-    position: "relative",
-    overflow: "hidden",
-  },
-  scanBeam: {
-    position: "absolute",
-    left: 12,
-    right: 12,
-    height: 4,
-    borderRadius: 2,
-    backgroundColor: "rgba(123,237,159,0.95)",
-    shadowColor: "#7bed9f",
-    shadowOpacity: 1,
-    shadowRadius: 12,
-    shadowOffset: { width: 0, height: 0 },
-    elevation: 4,
-  },
-  cornerTL: {
-    position: "absolute",
-    width: 28,
-    height: 28,
-    borderColor: "rgba(255,255,255,0.95)",
-    zIndex: 2,
-    top: 0,
-    left: 0,
-    borderTopWidth: 3,
-    borderLeftWidth: 3,
-    borderTopLeftRadius: 14,
-  },
-  cornerTR: {
-    position: "absolute",
-    width: 28,
-    height: 28,
-    borderColor: "rgba(255,255,255,0.95)",
-    zIndex: 2,
-    top: 0,
-    right: 0,
-    borderTopWidth: 3,
-    borderRightWidth: 3,
-    borderTopRightRadius: 14,
-  },
-  cornerBL: {
-    position: "absolute",
-    width: 28,
-    height: 28,
-    borderColor: "rgba(255,255,255,0.95)",
-    zIndex: 2,
-    bottom: 0,
-    left: 0,
-    borderBottomWidth: 3,
-    borderLeftWidth: 3,
-    borderBottomLeftRadius: 14,
-  },
-  cornerBR: {
-    position: "absolute",
-    width: 28,
-    height: 28,
-    borderColor: "rgba(255,255,255,0.95)",
-    zIndex: 2,
-    bottom: 0,
-    right: 0,
-    borderBottomWidth: 3,
-    borderRightWidth: 3,
-    borderBottomRightRadius: 14,
+    shadowColor: "#000",
+    shadowOpacity: 0.28,
+    shadowRadius: 10,
+    shadowOffset: { width: 0, height: 4 },
+    elevation: 8,
   },
   bottomPanel: {
     paddingHorizontal: 22,
