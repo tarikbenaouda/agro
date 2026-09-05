@@ -163,7 +163,15 @@ const CROP_CARDS: CropCard[] = [
   },
 ];
 
-const DAILY_TASKS = [
+type DailyTask = {
+  icon: string;
+  title: string;
+  time: string;
+  color: string;
+  background: string;
+};
+
+const DAILY_TASK_POOL: DailyTask[] = [
   {
     icon: "water",
     title: "Irrigation de la parcelle nord",
@@ -185,12 +193,52 @@ const DAILY_TASKS = [
     color: Colors.pruning,
     background: Colors.pruningBg,
   },
+  {
+    icon: "magnify",
+    title: "Inspection des feuilles de blé",
+    time: "Aujourd’hui · 13:30",
+    color: Colors.observation,
+    background: Colors.observationBg,
+  },
+  {
+    icon: "weather-sunny",
+    title: "Vérification de la météo",
+    time: "Aujourd’hui · 14:15",
+    color: Colors.observation,
+    background: Colors.observationBg,
+  },
+  {
+    icon: "bug-outline",
+    title: "Surveillance des ravageurs",
+    time: "Aujourd’hui · 15:00",
+    color: Colors.pesticide,
+    background: Colors.pesticideBg,
+  },
+  {
+    icon: "sprout",
+    title: "Contrôle de la croissance des cultures",
+    time: "Aujourd’hui · 16:00",
+    color: Colors.fertilizing,
+    background: Colors.fertilizingBg,
+  },
+  {
+    icon: "water-check",
+    title: "Contrôle des goutteurs",
+    time: "Aujourd’hui · 17:30",
+    color: Colors.irrigation,
+    background: Colors.irrigationBg,
+  },
 ];
+
+const createDailyTasks = (): DailyTask[] => {
+  return [...DAILY_TASK_POOL].sort(() => Math.random() - 0.5).slice(0, 3);
+};
 
 export default function HomeScreen() {
   const insets = useSafeAreaInsets();
   const [weather, setWeather] = useState<WeatherSnapshot>(DEFAULT_WEATHER);
   const [isWeatherLoading, setIsWeatherLoading] = useState(true);
+  const [dailyTasks] = useState<DailyTask[]>(createDailyTasks);
 
   useEffect(() => {
     let mounted = true;
@@ -427,7 +475,7 @@ export default function HomeScreen() {
           </View>
 
           <View style={styles.taskList}>
-            {DAILY_TASKS.map((task) => (
+            {dailyTasks.map((task) => (
               <TouchableOpacity
                 key={task.title}
                 style={styles.taskItem}
