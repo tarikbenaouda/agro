@@ -134,7 +134,7 @@ const formatLocationLabel = (
 const CROP_CARDS: CropCard[] = [
   {
     title: "Les céréales",
-    status: "7 cultures",
+    status: "3 cultures",
     image:
       "https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=900&q=80",
     accent: "#2D5A27",

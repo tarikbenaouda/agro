@@ -17,8 +17,7 @@ const CEREAL_CARDS = [
     id: "ble",
     title: "Blé",
     subtitle: "Parcelle céréalière principale",
-    image:
-      "https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=900&q=80",
+    image: require("../../assets/images/wheat.jpg"),
     accent: Colors.oliveAccent,
     route: "/cereales/ble" as const,
   },
@@ -26,8 +25,7 @@ const CEREAL_CARDS = [
     id: "orge",
     title: "Orge",
     subtitle: "Parcelle d'orge en suivi",
-    image:
-      "https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?auto=format&fit=crop&w=900&q=80",
+    image: require("../../assets/images/barley.jpg"),
     accent: Colors.orangeAccent,
     route: "/cereales/orge" as const,
   },
@@ -35,8 +33,7 @@ const CEREAL_CARDS = [
     id: "avoine",
     title: "Avoine",
     subtitle: "Parcelle d'avoine en suivi",
-    image:
-      "https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=900&q=80",
+    image: require("../../assets/images/oats.jpg"),
     accent: Colors.fertilizing,
     route: "/cereales/avoine" as const,
   },
