@@ -22,6 +22,24 @@ const CEREAL_CARDS = [
     accent: Colors.oliveAccent,
     route: "/cereales/ble" as const,
   },
+  {
+    id: "orge",
+    title: "Orge",
+    subtitle: "Parcelle d'orge en suivi",
+    image:
+      "https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?auto=format&fit=crop&w=900&q=80",
+    accent: Colors.orangeAccent,
+    route: "/cereales/orge" as const,
+  },
+  {
+    id: "avoine",
+    title: "Avoine",
+    subtitle: "Parcelle d'avoine en suivi",
+    image:
+      "https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=900&q=80",
+    accent: Colors.fertilizing,
+    route: "/cereales/avoine" as const,
+  },
 ];
 
 export default function CerealesScreen() {
