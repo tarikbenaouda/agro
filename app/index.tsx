@@ -519,7 +519,11 @@ export default function HomeScreen() {
               </Text>
             </TouchableOpacity>
 
-            <TouchableOpacity style={styles.tabItem} activeOpacity={0.8}>
+            <TouchableOpacity
+              style={styles.tabItem}
+              activeOpacity={0.8}
+              onPress={() => router.push("/cultures")}
+            >
               <Ionicons name="leaf" size={22} color="#8ca58a" />
               <Text style={styles.tabLabel}>Cultures</Text>
             </TouchableOpacity>
