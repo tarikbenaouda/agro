@@ -102,18 +102,26 @@ export default function CultureDetailsScreen() {
         <ScrollView
           contentContainerStyle={styles.content}
           showsVerticalScrollIndicator={false}
+          stickyHeaderIndices={[0]}
         >
-          <Image source={culture.image} style={styles.heroImage} />
+          <View style={styles.identityHeader}>
+            <Image source={culture.image} style={styles.identityImage} />
+            <View style={styles.titleRow}>
+              <Text style={styles.title}>{culture.title}</Text>
+              {culture.recommended ? (
+                <View style={styles.badge}>
+                  <Text style={styles.badgeText}>
+                    Recommandée dans votre région
+                  </Text>
+                </View>
+              ) : null}
+            </View>
+          </View>
 
-          <View style={styles.titleRow}>
-            <Text style={styles.title}>{culture.title}</Text>
-            {culture.recommended ? (
-              <View style={styles.badge}>
-                <Text style={styles.badgeText}>
-                  Recommandée dans votre région
-                </Text>
-              </View>
-            ) : null}
+          <View style={styles.introDivider}>
+            <Text style={styles.introText}>
+              Consultez les informations techniques de cette culture.
+            </Text>
           </View>
 
           <Text style={styles.sectionTitle}>Fiche technique</Text>
@@ -191,13 +199,26 @@ const styles = StyleSheet.create({
     paddingBottom: 32,
     gap: 14,
   },
-  heroImage: {
-    width: "100%",
-    height: 190,
-    borderRadius: 18,
+  identityHeader: {
+    minHeight: 86,
+    flexDirection: "row",
+    alignItems: "center",
+    paddingVertical: 10,
+    paddingHorizontal: 2,
+    backgroundColor: "#F4FAF2",
+    borderBottomWidth: 1,
+    borderBottomColor: "#e1ece0",
+    zIndex: 2,
+  },
+  identityImage: {
+    width: 66,
+    height: 66,
+    borderRadius: 12,
+    marginRight: 12,
     backgroundColor: "#e8f5e9",
   },
   titleRow: {
+    flex: 1,
     gap: 7,
   },
   title: {
@@ -216,6 +237,14 @@ const styles = StyleSheet.create({
     fontSize: 11,
     fontFamily: "Poppins_600SemiBold",
     color: Colors.oliveDark,
+  },
+  introDivider: {
+    paddingTop: 2,
+  },
+  introText: {
+    fontSize: 13,
+    fontFamily: "Poppins_400Regular",
+    color: Colors.textMuted,
   },
   sectionTitle: {
     marginTop: 8,
