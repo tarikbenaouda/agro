@@ -54,7 +54,11 @@ export default function CulturesScreen() {
                   key={culture.title}
                   style={styles.card}
                   activeOpacity={0.86}
-                  onPress={() => undefined}
+                  onPress={() =>
+                    router.push(
+                      `/cultures/${encodeURIComponent(culture.title)}`,
+                    )
+                  }
                 >
                   <Image source={culture.image} style={styles.image} />
                   <View style={styles.cardText}>
