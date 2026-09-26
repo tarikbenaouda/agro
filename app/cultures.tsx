@@ -20,7 +20,7 @@ export default function CulturesScreen() {
           <TouchableOpacity
             style={styles.backButton}
             activeOpacity={0.8}
-            onPress={() => router.back()}
+            onPress={() => router.replace("/")}
             accessibilityLabel="Retour"
           >
             <Ionicons name="arrow-back" size={22} color={Colors.textPrimary} />

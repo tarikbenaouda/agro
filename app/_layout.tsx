@@ -1,4 +1,5 @@
 import AppSplash from "@/components/AppSplash";
+import BottomNav from "@/components/BottomNav";
 import { Colors } from "@/constants/colors";
 import {
   Poppins_400Regular,
@@ -50,6 +51,7 @@ export default function RootLayout() {
           gestureEnabled: true,
         }}
       />
+      {!showSplash ? <BottomNav /> : null}
       {showSplash ? <AppSplash /> : null}
     </SafeAreaProvider>
   );

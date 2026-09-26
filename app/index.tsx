@@ -504,64 +504,6 @@ export default function HomeScreen() {
             ))}
           </View>
         </ScrollView>
-
-        <View
-          style={[
-            styles.bottomBarWrap,
-            { paddingBottom: Math.max(insets.bottom, 12) },
-          ]}
-        >
-          <View style={styles.bottomBar}>
-            <TouchableOpacity style={styles.tabItem} activeOpacity={0.8}>
-              <Ionicons name="home" size={22} color={stylesData.primary} />
-              <Text style={[styles.tabLabel, styles.tabLabelActive]}>
-                Accueil
-              </Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={styles.tabItem}
-              activeOpacity={0.8}
-              onPress={() => router.push("/cultures")}
-            >
-              <Ionicons name="leaf" size={22} color="#8ca58a" />
-              <Text style={styles.tabLabel}>Cultures</Text>
-            </TouchableOpacity>
-
-            <View style={styles.centerButtonSlot}>
-              <TouchableOpacity
-                style={styles.centerButton}
-                activeOpacity={0.85}
-                onPress={() => router.push("/leaf-scan")}
-                accessibilityLabel="Analyser une feuille avec la caméra"
-              >
-                <MaterialCommunityIcons
-                  name="leaf-circle-outline"
-                  size={32}
-                  color="#ffffff"
-                />
-              </TouchableOpacity>
-            </View>
-
-            <TouchableOpacity
-              style={styles.tabItem}
-              activeOpacity={0.8}
-              onPress={() => router.push("/alertes")}
-            >
-              <Ionicons name="warning-outline" size={22} color="#8ca58a" />
-              <Text style={styles.tabLabel}>Alertes</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={styles.tabItem}
-              activeOpacity={0.8}
-              onPress={() => router.push("/profile")}
-            >
-              <Ionicons name="person-outline" size={22} color="#8ca58a" />
-              <Text style={styles.tabLabel}>Profil</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
       </View>
     </SafeAreaView>
   );
