@@ -49,7 +49,7 @@ export const CULTURE_GROUPS: CultureGroup[] = [
       },
       {
         title: "Orge",
-        image: require("../assets/images/barley.jpg"),
+        image: require("../assets/images/cultures/barley.jpg"),
         recommended: true,
         technicalDetails: {
           sowingPeriod: "Octobre–novembre",
@@ -66,7 +66,7 @@ export const CULTURE_GROUPS: CultureGroup[] = [
       },
       {
         title: "Avoine",
-        image: require("../assets/images/oats.jpg"),
+        image: require("../assets/images/cultures/oats.jpg"),
         technicalDetails: {
           sowingPeriod: "Octobre–décembre",
           method: "Semis en lignes",
@@ -82,7 +82,7 @@ export const CULTURE_GROUPS: CultureGroup[] = [
       },
       {
         title: "Maïs",
-        image: require("../assets/images/wheat.jpg"),
+        image: require("../assets/images/cultures/corns.jpg"),
         recommended: true,
         technicalDetails: {
           sowingPeriod: "Avril–mai",
@@ -100,7 +100,7 @@ export const CULTURE_GROUPS: CultureGroup[] = [
       },
       {
         title: "Sorgho",
-        image: require("../assets/images/barley.jpg"),
+        image: require("../assets/images/cultures/Sorghum.jpg"),
         technicalDetails: {
           sowingPeriod: "Avril–mai",
           method: "Semis en lignes",
@@ -117,7 +117,7 @@ export const CULTURE_GROUPS: CultureGroup[] = [
       },
       {
         title: "Seigle",
-        image: require("../assets/images/oats.jpg"),
+        image: require("../assets/images/cultures/rye.jpg"),
         technicalDetails: {
           sowingPeriod: "Octobre–novembre",
           method: "Semis en lignes",
@@ -174,7 +174,7 @@ export const CULTURE_GROUPS: CultureGroup[] = [
       },
       {
         title: "Citronnier",
-        image: require("../assets/images/oranges.jpg"),
+        image: require("../assets/images/cultures/lemons.jpg"),
         recommended: true,
         technicalDetails: {
           sowingPeriod: "Octobre–mars pour les jeunes plants",
@@ -192,7 +192,7 @@ export const CULTURE_GROUPS: CultureGroup[] = [
       },
       {
         title: "Amandier",
-        image: require("../assets/images/olives.jpg"),
+        image: require("../assets/images/cultures/almonds_tree.jpg"),
         recommended: true,
         technicalDetails: {
           sowingPeriod: "Novembre–mars pour les jeunes plants",
@@ -209,7 +209,7 @@ export const CULTURE_GROUPS: CultureGroup[] = [
       },
       {
         title: "Figuier",
-        image: require("../assets/images/olives.jpg"),
+        image: require("../assets/images/cultures/figs.jpg"),
         technicalDetails: {
           sowingPeriod: "Novembre–mars pour les jeunes plants",
           method: "Plantation de plants ou boutures enracinées",
@@ -225,7 +225,7 @@ export const CULTURE_GROUPS: CultureGroup[] = [
       },
       {
         title: "Grenadier",
-        image: require("../assets/images/oranges.jpg"),
+        image: require("../assets/images/cultures/pomegranates.jpg"),
         technicalDetails: {
           sowingPeriod: "Novembre–mars pour les jeunes plants",
           method: "Plantation de plants greffés ou boutures",
@@ -246,7 +246,7 @@ export const CULTURE_GROUPS: CultureGroup[] = [
     cultures: [
       {
         title: "Pois chiche",
-        image: require("../assets/images/oats.jpg"),
+        image: require("../assets/images/cultures/chickpea.jpg"),
         recommended: true,
         technicalDetails: {
           sowingPeriod: "Février–mars ou octobre–novembre",
@@ -263,7 +263,7 @@ export const CULTURE_GROUPS: CultureGroup[] = [
       },
       {
         title: "Lentille",
-        image: require("../assets/images/oats.jpg"),
+        image: require("../assets/images/cultures/Brown_lentils.jpg"),
         recommended: true,
         technicalDetails: {
           sowingPeriod: "Novembre–décembre",
@@ -280,7 +280,7 @@ export const CULTURE_GROUPS: CultureGroup[] = [
       },
       {
         title: "Fève",
-        image: require("../assets/images/leaf.png"),
+        image: require("../assets/images/cultures/Broad_bean.jpg"),
         technicalDetails: {
           sowingPeriod: "Octobre–décembre",
           method: "Semis en poquets ou en lignes",
@@ -296,7 +296,7 @@ export const CULTURE_GROUPS: CultureGroup[] = [
       },
       {
         title: "Pois",
-        image: require("../assets/images/leaf.png"),
+        image: require("../assets/images/cultures/peas.jpg"),
         technicalDetails: {
           sowingPeriod: "Octobre–février",
           method: "Semis en lignes",
@@ -312,7 +312,7 @@ export const CULTURE_GROUPS: CultureGroup[] = [
       },
       {
         title: "Haricot",
-        image: require("../assets/images/leaf.png"),
+        image: require("../assets/images/cultures/white_beans.jpg"),
         technicalDetails: {
           sowingPeriod: "Avril–juin",
           method: "Semis en poquets ou en lignes",
@@ -328,7 +328,7 @@ export const CULTURE_GROUPS: CultureGroup[] = [
       },
       {
         title: "Soja",
-        image: require("../assets/images/leaf.png"),
+        image: require("../assets/images/cultures/Soybeans.jpg"),
         technicalDetails: {
           sowingPeriod: "Avril–mai",
           method: "Semis en lignes avec semoir",
@@ -349,7 +349,7 @@ export const CULTURE_GROUPS: CultureGroup[] = [
     cultures: [
       {
         title: "Tomate",
-        image: require("../assets/images/oranges.jpg"),
+        image: require("../assets/images/cultures/tomatos.jpg"),
         recommended: true,
         technicalDetails: {
           sowingPeriod: "Février–avril sous abri, avril–mai en plein champ",
@@ -367,7 +367,7 @@ export const CULTURE_GROUPS: CultureGroup[] = [
       },
       {
         title: "Pomme de terre",
-        image: require("../assets/images/wheat.jpg"),
+        image: require("../assets/images/cultures/potatos.jpg"),
         technicalDetails: {
           sowingPeriod: "Février–avril",
           method: "Plantation de tubercules en billons",
@@ -384,7 +384,7 @@ export const CULTURE_GROUPS: CultureGroup[] = [
       },
       {
         title: "Oignon",
-        image: require("../assets/images/wheat.jpg"),
+        image: require("../assets/images/cultures/onions.jpg"),
         recommended: true,
         technicalDetails: {
           sowingPeriod: "Septembre–novembre ou janvier–mars",
@@ -402,7 +402,7 @@ export const CULTURE_GROUPS: CultureGroup[] = [
       },
       {
         title: "Carotte",
-        image: require("../assets/images/wheat.jpg"),
+        image: require("../assets/images/cultures/carrots.png"),
         technicalDetails: {
           sowingPeriod: "Octobre–mars, selon la variété",
           method: "Semis direct en lignes",
@@ -419,7 +419,7 @@ export const CULTURE_GROUPS: CultureGroup[] = [
       },
       {
         title: "Poivron",
-        image: require("../assets/images/oranges.jpg"),
+        image: require("../assets/images/cultures/pepper.jpg"),
         technicalDetails: {
           sowingPeriod: "Janvier–mars sous abri",
           method: "Plantation de plants en lignes",
@@ -436,7 +436,7 @@ export const CULTURE_GROUPS: CultureGroup[] = [
       },
       {
         title: "Courgette",
-        image: require("../assets/images/leaf.png"),
+        image: require("../assets/images/cultures/zucchini.jpg"),
         technicalDetails: {
           sowingPeriod: "Mars–juin",
           method: "Semis en poquets ou plantation de plants",
@@ -458,7 +458,7 @@ export const CULTURE_GROUPS: CultureGroup[] = [
     cultures: [
       {
         title: "Menthe",
-        image: require("../assets/images/leaf.png"),
+        image: require("../assets/images/cultures/mints.jpg"),
         recommended: true,
         technicalDetails: {
           sowingPeriod: "Mars–mai",
@@ -475,7 +475,7 @@ export const CULTURE_GROUPS: CultureGroup[] = [
       },
       {
         title: "Basilic",
-        image: require("../assets/images/leaf.png"),
+        image: require("../assets/images/cultures/basilic.jpg"),
         technicalDetails: {
           sowingPeriod: "Avril–juin",
           method: "Semis en pépinière puis repiquage",
@@ -491,7 +491,7 @@ export const CULTURE_GROUPS: CultureGroup[] = [
       },
       {
         title: "Thym",
-        image: require("../assets/images/leaf.png"),
+        image: require("../assets/images/cultures/thyme.jpg"),
         recommended: true,
         technicalDetails: {
           sowingPeriod: "Mars–mai",
@@ -508,7 +508,7 @@ export const CULTURE_GROUPS: CultureGroup[] = [
       },
       {
         title: "Romarin",
-        image: require("../assets/images/leaf.png"),
+        image: require("../assets/images/cultures/rosemary.jpg"),
         recommended: true,
         technicalDetails: {
           sowingPeriod: "Mars–mai",
@@ -525,7 +525,7 @@ export const CULTURE_GROUPS: CultureGroup[] = [
       },
       {
         title: "Coriandre",
-        image: require("../assets/images/leaf.png"),
+        image: require("../assets/images/cultures/coriander.jpg"),
         technicalDetails: {
           sowingPeriod: "Février–octobre",
           method: "Semis direct en lignes",
@@ -541,7 +541,7 @@ export const CULTURE_GROUPS: CultureGroup[] = [
       },
       {
         title: "Persil",
-        image: require("../assets/images/leaf.png"),
+        image: require("../assets/images/cultures/parsley.jpg"),
         technicalDetails: {
           sowingPeriod: "Février–septembre",
           method: "Semis direct en lignes",
