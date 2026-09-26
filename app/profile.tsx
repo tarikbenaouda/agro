@@ -1,7 +1,6 @@
 import { Colors } from "@/constants/colors";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
-import React from "react";
 import {
   Image,
   ScrollView,
@@ -33,7 +32,7 @@ export default function ProfileScreen() {
 
         <View style={styles.card}>
           <Image
-            source={require("../assets/images/icon.png")}
+            source={require("../assets/images/engineer.jpg")}
             style={styles.avatar}
           />
           <Text style={styles.name}>Abdenour Mahmoud</Text>
