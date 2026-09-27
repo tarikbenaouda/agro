@@ -14,14 +14,14 @@ import { SafeAreaView } from "react-native-safe-area-context";
 const TREE_CARDS = [
   {
     title: "Olivier",
-    subtitle: "Consulter les parcelles d'oliviers",
+    subtitle: "Accéder au calendrier des oliviers",
     image: require("../assets/images/olives.jpg"),
     accent: Colors.oliveAccent,
     treeId: "olive" as const,
   },
   {
     title: "Oranger",
-    subtitle: "Consulter les parcelles d'orangers",
+    subtitle: "Accéder au calendrier des orangers",
     image: require("../assets/images/oranges.jpg"),
     accent: Colors.orangeAccent,
     treeId: "orange" as const,
@@ -76,7 +76,7 @@ export default function FruitTreesScreen() {
               onPress={() => {
                 if (tree.treeId) {
                   router.push({
-                    pathname: "/fruit-trees/[treeId]",
+                    pathname: "/program/[treeId]",
                     params: { treeId: tree.treeId },
                   });
                   return;
