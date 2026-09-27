@@ -13,7 +13,7 @@ import { StatusBar } from "expo-status-bar";
 import { useEffect, useState } from "react";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 
-SplashScreen.preventAutoHideAsync();
+SplashScreen.preventAutoHideAsync().catch(() => undefined);
 
 export default function RootLayout() {
   const [showSplash, setShowSplash] = useState(true);
@@ -39,10 +39,7 @@ export default function RootLayout() {
 
   return (
     <SafeAreaProvider>
-      <StatusBar
-        style={showSplash ? "light" : "dark"}
-        backgroundColor={showSplash ? "#2D5A27" : Colors.background}
-      />
+      <StatusBar style={showSplash ? "light" : "dark"} />
       <Stack
         screenOptions={{
           headerShown: false,

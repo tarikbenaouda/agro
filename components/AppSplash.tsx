@@ -1,5 +1,4 @@
 import { Ionicons } from "@expo/vector-icons";
-import React from "react";
 import { StyleSheet, Text, View } from "react-native";
 
 export default function AppSplash() {
@@ -20,10 +19,12 @@ export default function AppSplash() {
 
 const styles = StyleSheet.create({
   container: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     backgroundColor: "#2D5A27",
     alignItems: "center",
     justifyContent: "center",
+    elevation: 10,
+    zIndex: 10,
   },
   glowTop: {
     position: "absolute",
