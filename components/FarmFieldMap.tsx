@@ -375,6 +375,11 @@ const PARCELS: Parcel[] = [
   },
 ];
 
+const CONTROL_SYSTEM = {
+  points: "540,242 640,242 640,272 540,272",
+  label: { x: 590, y: 261 },
+};
+
 function fillFor(parcel: Parcel, isSelected: boolean): string {
   if (parcel.type === "serre") return COLORS.serre;
   if (parcel.type === "olivier")
@@ -453,31 +458,51 @@ export default function FarmFieldMap() {
             height={mapHeight}
             viewBox={`0 0 ${VB_WIDTH} ${VB_HEIGHT}`}
           >
-            {PARCELS.map((parcel) => {
-              const isSelected = parcel.id === selectedId;
-              return (
-                <G key={parcel.id}>
-                  <Polygon
-                    points={parcel.points}
-                    fill={fillFor(parcel, isSelected)}
-                    stroke={COLORS.stroke}
-                    strokeWidth={isSelected ? 3 : 1.5}
-                    onPress={() => setSelectedId(parcel.id)}
-                  />
-                  <SvgText
-                    x={parcel.label.x}
-                    y={parcel.label.y}
-                    fontSize={13}
-                    fontWeight="bold"
-                    fill="#1f3d1f"
-                    textAnchor="middle"
-                    onPress={() => setSelectedId(parcel.id)}
-                  >
-                    {parcel.id}
-                  </SvgText>
-                </G>
-              );
-            })}
+            <G transform="translate(-46 0)">
+              {PARCELS.map((parcel) => {
+                const isSelected = parcel.id === selectedId;
+                return (
+                  <G key={parcel.id}>
+                    <Polygon
+                      points={parcel.points}
+                      fill={fillFor(parcel, isSelected)}
+                      stroke={COLORS.stroke}
+                      strokeWidth={isSelected ? 3 : 1.5}
+                      onPress={() => setSelectedId(parcel.id)}
+                    />
+                    <SvgText
+                      x={parcel.label.x}
+                      y={parcel.label.y}
+                      fontSize={13}
+                      fontWeight="bold"
+                      fill="#1f3d1f"
+                      textAnchor="middle"
+                      onPress={() => setSelectedId(parcel.id)}
+                    >
+                      {parcel.id}
+                    </SvgText>
+                  </G>
+                );
+              })}
+              <G pointerEvents="none">
+                <Polygon
+                  points={CONTROL_SYSTEM.points}
+                  fill="#e99ab2"
+                  stroke="#a84468"
+                  strokeWidth={1.5}
+                />
+                <SvgText
+                  x={CONTROL_SYSTEM.label.x}
+                  y={CONTROL_SYSTEM.label.y}
+                  fontSize={9}
+                  fontWeight="bold"
+                  fill="#702640"
+                  textAnchor="middle"
+                >
+                  Système de contrôle
+                </SvgText>
+              </G>
+            </G>
           </Svg>
         </ScrollView>
 
