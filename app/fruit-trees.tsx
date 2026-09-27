@@ -1,7 +1,6 @@
 import { Colors } from "@/constants/colors";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { router } from "expo-router";
-import React from "react";
 import {
   Image,
   ScrollView,
@@ -15,17 +14,17 @@ import { SafeAreaView } from "react-native-safe-area-context";
 const TREE_CARDS = [
   {
     title: "Olivier",
-    subtitle: "Accéder au calendrier des oliviers",
+    subtitle: "Consulter les parcelles d'oliviers",
     image: require("../assets/images/olives.jpg"),
     accent: Colors.oliveAccent,
-    route: "/program/olive" as const,
+    treeId: "olive" as const,
   },
   {
     title: "Oranger",
-    subtitle: "Accéder au calendrier des oranges",
+    subtitle: "Consulter les parcelles d'orangers",
     image: require("../assets/images/oranges.jpg"),
     accent: Colors.orangeAccent,
-    route: "/program/orange" as const,
+    treeId: "orange" as const,
   },
 ];
 
@@ -67,7 +66,7 @@ export default function FruitTreesScreen() {
               key={tree.title}
               style={styles.card}
               activeOpacity={0.86}
-              onPress={() => router.push(tree.route)}
+              onPress={() => router.push(`/fruit-trees/${tree.treeId}`)}
             >
               <Image
                 source={
