@@ -30,7 +30,7 @@ import Svg, { G, Polygon, Text as SvgText } from "react-native-svg";
 
 // ---- viewBox size for the whole field sketch ----
 const VB_WIDTH = 680;
-const VB_HEIGHT = 520;
+const VB_HEIGHT = 600;
 
 // ---- colors ----
 const COLORS = {
@@ -312,8 +312,8 @@ const PARCELS: Parcel[] = [
     id: "P15",
     type: "olivier",
     status: "bon",
-    points: "460,350 590,350 590,420 460,420",
-    label: { x: 525, y: 385 },
+    points: "380,350 480,350 480,420 380,420",
+    label: { x: 430, y: 385 },
     data: {
       sol: 43,
       tempSol: 21.9,
@@ -360,8 +360,8 @@ const PARCELS: Parcel[] = [
     id: "P19",
     type: "olivier",
     status: "surveiller",
-    points: "480,430 590,420 590,500 490,510",
-    label: { x: 535, y: 465 },
+    points: "380,500 480,500 480,580 380,580",
+    label: { x: 430, y: 545 },
     data: {
       sol: 33,
       tempSol: 22.4,
