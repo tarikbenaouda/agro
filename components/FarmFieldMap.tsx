@@ -10,7 +10,7 @@ import {
   useWindowDimensions,
   View,
 } from "react-native";
-import Svg, { G, Polygon, Text as SvgText } from "react-native-svg";
+import Svg, { Circle, G, Polygon, Text as SvgText } from "react-native-svg";
 
 /**
  * FarmFieldMap
@@ -184,7 +184,7 @@ const PARCELS: Parcel[] = [
   {
     id: "P09",
     type: "oranger",
-    status: "bon",
+    status: "surveiller",
     points: "380,113 514,113 514,187 380,187",
     label: { x: 447, y: 150 },
     data: {
@@ -200,7 +200,7 @@ const PARCELS: Parcel[] = [
   {
     id: "P12",
     type: "oranger",
-    status: "surveiller",
+    status: "bon",
     points: "520,150 594,150 594,230 520,230",
     label: { x: 557, y: 190 },
     data: {
@@ -470,6 +470,30 @@ export default function FarmFieldMap() {
                       strokeWidth={isSelected ? 3 : 1.5}
                       onPress={() => setSelectedId(parcel.id)}
                     />
+                    {parcel.status !== "bon" ? (
+                      <>
+                        <Circle
+                          cx={parcel.label.x}
+                          cy={parcel.label.y - 22}
+                          r={9}
+                          fill="#b5641a"
+                          stroke="#ffffff"
+                          strokeWidth={2}
+                          pointerEvents="none"
+                        />
+                        <SvgText
+                          x={parcel.label.x}
+                          y={parcel.label.y - 18}
+                          fontSize={11}
+                          fontWeight="bold"
+                          fill="#ffffff"
+                          textAnchor="middle"
+                          pointerEvents="none"
+                        >
+                          !
+                        </SvgText>
+                      </>
+                    ) : null}
                     <SvgText
                       x={parcel.label.x}
                       y={parcel.label.y}
@@ -544,26 +568,6 @@ export default function FarmFieldMap() {
               <Metric label="Azote" value={`${selected.data.azote} ppm`} />
               <Metric label="Dernière lecture" value="Aujourd'hui 10:24" />
             </View>
-
-            {selected.type !== "serre" ? (
-              <Pressable
-                style={styles.calendarBtn}
-                onPress={() =>
-                  router.push(
-                    selected.type === "olivier"
-                      ? "/program/olive"
-                      : "/program/orange",
-                  )
-                }
-              >
-                <Text style={styles.calendarBtnText}>
-                  {selected.type === "olivier"
-                    ? "Ouvrir le calendrier des oliviers"
-                    : "Ouvrir le calendrier des orangers"}{" "}
-                  →
-                </Text>
-              </Pressable>
-            ) : null}
           </View>
         )}
       </ScrollView>
@@ -646,11 +650,4 @@ const styles = StyleSheet.create({
   },
   metricLabel: { color: "#6b7a6b", fontSize: 12, marginBottom: 4 },
   metricValue: { fontSize: 17, fontWeight: "800", color: "#1f3d1f" },
-  calendarBtn: {
-    backgroundColor: "#c1470f",
-    borderRadius: 12,
-    paddingVertical: 14,
-    alignItems: "center",
-  },
-  calendarBtnText: { color: "#fff", fontWeight: "700" },
 });

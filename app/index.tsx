@@ -470,6 +470,36 @@ export default function HomeScreen() {
             })}
           </ScrollView>
 
+          <View style={styles.farmSectionHeader}>
+            <Text style={styles.sectionTitle}>Ma ferme</Text>
+            <Text style={styles.farmSectionHint}>Vue d'ensemble</Text>
+          </View>
+
+          <TouchableOpacity
+            style={styles.farmCard}
+            activeOpacity={0.88}
+            onPress={() => router.push("/farm")}
+          >
+            <Image
+              source={require("../assets/images/leaf.png")}
+              style={styles.farmImage}
+            />
+            <View style={styles.farmCardBody}>
+              <Text style={styles.farmCardTitle}>Plan de l'exploitation</Text>
+              <Text style={styles.farmCardSubtitle}>
+                Visualisez vos parcelles et leurs mesures au même endroit.
+              </Text>
+              <View style={styles.farmAction}>
+                <Text style={styles.farmActionText}>Ouvrir le plan</Text>
+                <Ionicons
+                  name="arrow-forward"
+                  size={17}
+                  color={stylesData.primary}
+                />
+              </View>
+            </View>
+          </TouchableOpacity>
+
           <View style={styles.sectionHeader}>
             <Text style={styles.sectionTitle}>Tâches du jour</Text>
           </View>
@@ -699,6 +729,61 @@ const styles = StyleSheet.create({
   },
   cropCardDisabled: {
     opacity: 0.7,
+  },
+  farmSectionHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 12,
+  },
+  farmSectionHint: {
+    fontSize: 13,
+    fontFamily: "Poppins_600SemiBold",
+    color: "#6f7f6d",
+  },
+  farmCard: {
+    flexDirection: "row",
+    minHeight: 132,
+    backgroundColor: "#eaf4e7",
+    borderRadius: 18,
+    overflow: "hidden",
+    borderWidth: 1,
+    borderColor: "#cfe3c8",
+    marginBottom: 26,
+  },
+  farmImage: {
+    width: 112,
+    height: "100%",
+    backgroundColor: "#d2e8cf",
+  },
+  farmCardBody: {
+    flex: 1,
+    paddingHorizontal: 16,
+    paddingVertical: 14,
+    justifyContent: "center",
+    gap: 6,
+  },
+  farmCardTitle: {
+    fontSize: 17,
+    fontFamily: "Poppins_700Bold",
+    color: "#17331a",
+  },
+  farmCardSubtitle: {
+    fontSize: 12,
+    lineHeight: 18,
+    fontFamily: "Poppins_400Regular",
+    color: "#5f765e",
+  },
+  farmAction: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+    marginTop: 3,
+  },
+  farmActionText: {
+    fontSize: 12,
+    fontFamily: "Poppins_700Bold",
+    color: stylesData.primary,
   },
   cropImage: {
     width: "100%",
