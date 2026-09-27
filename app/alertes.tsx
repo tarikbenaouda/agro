@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Colors } from "@/constants/colors";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { router } from "expo-router";
@@ -18,6 +19,7 @@ type AlertItem = {
   timestamp: string;
   icon: string;
   priority: "haute" | "moyenne" | "basse";
+  isRead?: boolean;
 };
 
 const ALERTS: AlertItem[] = [
@@ -30,6 +32,7 @@ const ALERTS: AlertItem[] = [
     timestamp: "Il y a 2 heures",
     icon: "leaf",
     priority: "haute",
+    isRead: false,
   },
   {
     id: "2",
@@ -50,6 +53,7 @@ const ALERTS: AlertItem[] = [
     timestamp: "Il y a 1 jour",
     icon: "cloud-outline",
     priority: "moyenne",
+    isRead: true,
   },
   {
     id: "4",
@@ -70,6 +74,7 @@ const ALERTS: AlertItem[] = [
     timestamp: "Il y a 3 jours",
     icon: "settings-outline",
     priority: "basse",
+    isRead: true,
   },
   {
     id: "6",
@@ -84,6 +89,14 @@ const ALERTS: AlertItem[] = [
 ];
 
 export default function AlertesScreen() {
+  const [activeFilter, setActiveFilter] = useState<"Toutes" | "Critiques" | "Non lues">("Toutes");
+
+  const filteredAlerts = ALERTS.filter(alert => {
+    if (activeFilter === "Critiques") return alert.priority === "haute" || alert.type === "danger";
+    if (activeFilter === "Non lues") return alert.isRead === false;
+    return true;
+  });
+
   const getAlertColor = (type: "warning" | "danger" | "info") => {
     switch (type) {
       case "danger":
@@ -148,25 +161,20 @@ export default function AlertesScreen() {
         </View>
 
         <View style={styles.filterRow}>
-          <TouchableOpacity style={styles.filterBtn} activeOpacity={0.8}>
-            <Text style={styles.filterBtnText}>Toutes</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[styles.filterBtn, styles.filterBtnInactive]}
-            activeOpacity={0.8}
-          >
-            <Text style={styles.filterBtnTextInactive}>Critiques</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[styles.filterBtn, styles.filterBtnInactive]}
-            activeOpacity={0.8}
-          >
-            <Text style={styles.filterBtnTextInactive}>Non lues</Text>
-          </TouchableOpacity>
+          {(["Toutes", "Critiques", "Non lues"] as const).map(filter => (
+            <TouchableOpacity 
+              key={filter} 
+              style={[styles.filterBtn, activeFilter !== filter && styles.filterBtnInactive]} 
+              activeOpacity={0.8}
+              onPress={() => setActiveFilter(filter)}
+            >
+              <Text style={activeFilter === filter ? styles.filterBtnText : styles.filterBtnTextInactive}>{filter}</Text>
+            </TouchableOpacity>
+          ))}
         </View>
 
         <View style={styles.alertsList}>
-          {ALERTS.map((alert) => {
+          {filteredAlerts.map((alert) => {
             const alertColor = getAlertColor(alert.type);
             const priorityColors = getPriorityColor(alert.priority);
 
@@ -250,10 +258,12 @@ export default function AlertesScreen() {
                 </View>
 
                 <View style={styles.alertRight}>
+                  {!alert.isRead && (
                   <View
                     style={[styles.unreadDot, { backgroundColor: alertColor }]}
                   />
-                </View>
+                  )
+                }</View>
               </TouchableOpacity>
             );
           })}
