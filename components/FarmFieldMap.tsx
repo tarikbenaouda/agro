@@ -73,8 +73,8 @@ const PARCELS: Parcel[] = [
     id: "P03",
     type: "oranger",
     status: "bon",
-    points: "108,20 252,20 252,110 108,110",
-    label: { x: 180, y: 65 },
+    points: "122,20 252,20 252,110 122,110",
+    label: { x: 187, y: 65 },
     data: {
       sol: 46,
       tempSol: 22.8,
@@ -121,7 +121,7 @@ const PARCELS: Parcel[] = [
     id: "P10",
     type: "oranger",
     status: "surveiller",
-    points: "520,20 600,20 650,70 650,120 590,130 520,110",
+    points: "520,20 600,20 650,70 650,110 520,110",
     label: { x: 585, y: 65 },
     data: {
       sol: 34,
@@ -137,8 +137,8 @@ const PARCELS: Parcel[] = [
     id: "P13",
     type: "serre",
     status: "bon",
-    points: "650,20 650,220 600,220 590,130 650,120",
-    label: { x: 630, y: 130 },
+    points: "600,150 650,150 650,230 600,230",
+    label: { x: 625, y: 190 },
     data: {
       sol: 55,
       tempSol: 24.0,
@@ -153,8 +153,8 @@ const PARCELS: Parcel[] = [
     id: "P04",
     type: "oranger",
     status: "bon",
-    points: "108,110 252,110 252,190 108,190",
-    label: { x: 180, y: 150 },
+    points: "122,110 252,110 252,190 122,190",
+    label: { x: 187, y: 150 },
     data: {
       sol: 48,
       tempSol: 22.6,
@@ -201,8 +201,8 @@ const PARCELS: Parcel[] = [
     id: "P12",
     type: "oranger",
     status: "surveiller",
-    points: "520,120 600,120 600,200 520,200",
-    label: { x: 560, y: 160 },
+    points: "520,150 600,150 600,230 520,230",
+    label: { x: 560, y: 190 },
     data: {
       sol: 38,
       tempSol: 23.1,
@@ -217,8 +217,8 @@ const PARCELS: Parcel[] = [
     id: "P05",
     type: "oranger",
     status: "bon",
-    points: "108,190 252,190 252,270 108,270",
-    label: { x: 180, y: 230 },
+    points: "122,190 252,190 252,270 122,270",
+    label: { x: 187, y: 230 },
     data: {
       sol: 49,
       tempSol: 22.5,
