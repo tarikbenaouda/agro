@@ -1,7 +1,6 @@
 import { Colors } from "@/constants/colors";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { router } from "expo-router";
-import React from "react";
 import {
   ScrollView,
   StyleSheet,
@@ -259,6 +258,8 @@ export default function AlertesScreen() {
             );
           })}
         </View>
+
+        <View style={styles.bottomSpacer} />
       </ScrollView>
     </SafeAreaView>
   );
@@ -436,5 +437,9 @@ const styles = StyleSheet.create({
     width: 10,
     height: 10,
     borderRadius: 999,
+  },
+  bottomSpacer: {
+    width: "100%",
+    height: 88,
   },
 });

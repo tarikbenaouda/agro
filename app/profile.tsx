@@ -89,6 +89,8 @@ export default function ProfileScreen() {
             <Text style={styles.actionText}>Paramètres</Text>
           </TouchableOpacity>
         </View>
+
+        <View style={styles.bottomSpacer} />
       </ScrollView>
     </SafeAreaView>
   );
@@ -187,5 +189,9 @@ const styles = StyleSheet.create({
     marginLeft: 8,
     color: "#244a20",
     fontFamily: "Poppins_600SemiBold",
+  },
+  bottomSpacer: {
+    width: "100%",
+    height: 88,
   },
 });
