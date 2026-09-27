@@ -7,6 +7,7 @@ import {
   ScrollView,
   StyleSheet,
   Text,
+  useWindowDimensions,
   View,
 } from "react-native";
 import Svg, { G, Polygon, Text as SvgText } from "react-native-svg";
@@ -414,6 +415,9 @@ function Metric({ label, value }: { label: string; value: string }) {
 export default function FarmFieldMap() {
   const [selectedId, setSelectedId] = useState("P01");
   const selected = PARCELS.find((p) => p.id === selectedId);
+  const { width: screenWidth } = useWindowDimensions();
+  const mapWidth = Math.min(VB_WIDTH, Math.max(screenWidth - 32, 1));
+  const mapHeight = mapWidth * (VB_HEIGHT / VB_WIDTH);
 
   return (
     <SafeAreaView style={styles.screen}>
@@ -445,8 +449,8 @@ export default function FarmFieldMap() {
           style={styles.mapScroll}
         >
           <Svg
-            width={VB_WIDTH}
-            height={VB_HEIGHT}
+            width={mapWidth}
+            height={mapHeight}
             viewBox={`0 0 ${VB_WIDTH} ${VB_HEIGHT}`}
           >
             {PARCELS.map((parcel) => {
