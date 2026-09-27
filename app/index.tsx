@@ -1,8 +1,9 @@
 import { Colors } from "@/constants/colors";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as Location from "expo-location";
-import { router } from "expo-router";
-import React, { useEffect, useState } from "react";
+import { router, useFocusEffect } from "expo-router";
+import React, { useCallback, useState } from "react";
 import {
   Image,
   ImageSourcePropType,
@@ -240,95 +241,99 @@ export default function HomeScreen() {
   const [isWeatherLoading, setIsWeatherLoading] = useState(true);
   const [dailyTasks] = useState<DailyTask[]>(createDailyTasks);
 
-  useEffect(() => {
-    let mounted = true;
+  useFocusEffect(
+    useCallback(() => {
+      let mounted = true;
 
-    const loadWeather = async () => {
-      try {
-        const { status } = await Location.requestForegroundPermissionsAsync();
-        if (status !== "granted") {
+      const loadWeather = async () => {
+        try {
+          let latitude = 35.7412; // Default to Relizane, Algeria
+          let longitude = 0.5559;
+
+          try {
+            const savedLoc = await AsyncStorage.getItem("selectedLocation");
+            if (savedLoc) {
+              const loc = JSON.parse(savedLoc);
+              if (loc.latitude && loc.longitude) {
+                latitude = loc.latitude;
+                longitude = loc.longitude;
+              }
+            }
+          } catch (e) {
+            console.error("Failed to load location from storage", e);
+          }
+
+          const [reverseGeocode, weatherResponse] = await Promise.all([
+            Location.reverseGeocodeAsync({ latitude, longitude }),
+            fetch(
+              `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,relative_humidity_2m,wind_speed_10m,weather_code&daily=temperature_2m_max,temperature_2m_min&timezone=auto&forecast_days=1`,
+            ),
+          ]);
+
+          if (!weatherResponse.ok) {
+            throw new Error(
+              `Weather request failed (${weatherResponse.status})`,
+            );
+          }
+
+          const payload: {
+            current?: {
+              temperature_2m?: number;
+              relative_humidity_2m?: number;
+              wind_speed_10m?: number;
+              weather_code?: number;
+            };
+            daily?: {
+              temperature_2m_max?: number[];
+              temperature_2m_min?: number[];
+            };
+          } = await weatherResponse.json();
+
+          const current = payload.current;
+          const parsed = weatherFromCode(current?.weather_code);
+
           if (!mounted) return;
+
           setWeather({
-            ...DEFAULT_WEATHER,
-            condition: "Localisation refusée",
+            temperature:
+              typeof current?.temperature_2m === "number"
+                ? `${Math.round(current.temperature_2m)}°C`
+                : "--°C",
+            condition: parsed.condition,
+            humidity:
+              typeof current?.relative_humidity_2m === "number"
+                ? `${Math.round(current.relative_humidity_2m)}%`
+                : "--",
+            wind:
+              typeof current?.wind_speed_10m === "number"
+                ? `${Math.round(current.wind_speed_10m)} km/h`
+                : "--",
+            todayRange:
+              typeof payload.daily?.temperature_2m_min?.[0] === "number" &&
+              typeof payload.daily?.temperature_2m_max?.[0] === "number"
+                ? `${Math.round(payload.daily.temperature_2m_min[0])}° / ${Math.round(payload.daily.temperature_2m_max[0])}°`
+                : "-- / --",
+            location: formatLocationLabel(reverseGeocode, latitude, longitude),
+            icon: parsed.icon,
+            iconColor: parsed.iconColor,
           });
-          return;
+        } catch {
+          if (!mounted) return;
+          setWeather(DEFAULT_WEATHER);
+        } finally {
+          if (mounted) {
+            setIsWeatherLoading(false);
+          }
         }
+      };
 
-        const position = await Location.getCurrentPositionAsync({
-          accuracy: Location.Accuracy.Balanced,
-        });
+      void loadWeather();
 
-        const { latitude, longitude } = position.coords;
-
-        const [reverseGeocode, weatherResponse] = await Promise.all([
-          Location.reverseGeocodeAsync({ latitude, longitude }),
-          fetch(
-            `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,relative_humidity_2m,wind_speed_10m,weather_code&daily=temperature_2m_max,temperature_2m_min&timezone=auto&forecast_days=1`,
-          ),
-        ]);
-
-        if (!weatherResponse.ok) {
-          throw new Error(`Weather request failed (${weatherResponse.status})`);
-        }
-
-        const payload: {
-          current?: {
-            temperature_2m?: number;
-            relative_humidity_2m?: number;
-            wind_speed_10m?: number;
-            weather_code?: number;
-          };
-          daily?: {
-            temperature_2m_max?: number[];
-            temperature_2m_min?: number[];
-          };
-        } = await weatherResponse.json();
-
-        const current = payload.current;
-        const parsed = weatherFromCode(current?.weather_code);
-
-        if (!mounted) return;
-
-        setWeather({
-          temperature:
-            typeof current?.temperature_2m === "number"
-              ? `${Math.round(current.temperature_2m)}°C`
-              : "--°C",
-          condition: parsed.condition,
-          humidity:
-            typeof current?.relative_humidity_2m === "number"
-              ? `${Math.round(current.relative_humidity_2m)}%`
-              : "--",
-          wind:
-            typeof current?.wind_speed_10m === "number"
-              ? `${Math.round(current.wind_speed_10m)} km/h`
-              : "--",
-          todayRange:
-            typeof payload.daily?.temperature_2m_min?.[0] === "number" &&
-            typeof payload.daily?.temperature_2m_max?.[0] === "number"
-              ? `${Math.round(payload.daily.temperature_2m_min[0])}° / ${Math.round(payload.daily.temperature_2m_max[0])}°`
-              : "-- / --",
-          location: formatLocationLabel(reverseGeocode, latitude, longitude),
-          icon: parsed.icon,
-          iconColor: parsed.iconColor,
-        });
-      } catch {
-        if (!mounted) return;
-        setWeather(DEFAULT_WEATHER);
-      } finally {
-        if (mounted) {
-          setIsWeatherLoading(false);
-        }
-      }
-    };
-
-    void loadWeather();
-
-    return () => {
-      mounted = false;
-    };
-  }, []);
+      return () => {
+        mounted = false;
+      };
+    }, []),
+  );
 
   const openCrop = (
     route?: "/program/olive" | "/program/orange" | "/fruit-trees" | "/cereales",
@@ -387,7 +392,11 @@ export default function HomeScreen() {
             </Text>
           </View>
 
-          <View style={styles.weatherCard}>
+          <TouchableOpacity
+            style={styles.weatherCard}
+            activeOpacity={0.8}
+            onPress={() => router.push("/map")}
+          >
             <View style={styles.weatherTopRow}>
               <View style={styles.weatherLeft}>
                 <View style={styles.weatherIconCircle}>
@@ -422,7 +431,7 @@ export default function HomeScreen() {
               <Ionicons name="location-sharp" size={15} color="#d9f5d6" />
               <Text style={styles.locationText}>{weather.location}</Text>
             </View>
-          </View>
+          </TouchableOpacity>
 
           <View style={styles.sectionHeader}>
             <Text style={styles.sectionTitle}>Mes Cultures</Text>

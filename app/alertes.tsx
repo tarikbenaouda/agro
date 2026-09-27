@@ -118,7 +118,7 @@ export default function AlertesScreen() {
       >
         <View style={styles.headerRow}>
           <TouchableOpacity
-            onPress={() => router.back()}
+            onPress={() => router.canGoBack() ? router.back() : router.replace("/")}
             style={styles.backBtn}
             activeOpacity={0.8}
           >
