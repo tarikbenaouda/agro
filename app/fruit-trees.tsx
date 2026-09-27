@@ -26,6 +26,13 @@ const TREE_CARDS = [
     accent: Colors.orangeAccent,
     treeId: "orange" as const,
   },
+  {
+    title: "Ma ferme",
+    subtitle: "Visualiser le plan de votre exploitation",
+    image: require("../assets/images/leaf.png"),
+    accent: Colors.oliveDark,
+    route: "/farm" as const,
+  },
 ];
 
 export default function FruitTreesScreen() {
@@ -66,7 +73,17 @@ export default function FruitTreesScreen() {
               key={tree.title}
               style={styles.card}
               activeOpacity={0.86}
-              onPress={() => router.push(`/fruit-trees/${tree.treeId}`)}
+              onPress={() => {
+                if (tree.treeId) {
+                  router.push({
+                    pathname: "/fruit-trees/[treeId]",
+                    params: { treeId: tree.treeId },
+                  });
+                  return;
+                }
+
+                router.push("../farm");
+              }}
             >
               <Image
                 source={
