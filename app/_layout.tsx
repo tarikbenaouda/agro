@@ -1,5 +1,6 @@
 import AppSplash from "@/components/AppSplash";
 import BottomNav from "@/components/BottomNav";
+import SystemStatusBarLimit from "@/components/SystemStatusBarLimit";
 import { Colors } from "@/constants/colors";
 import {
   Poppins_400Regular,
@@ -39,17 +40,22 @@ export default function RootLayout() {
 
   return (
     <SafeAreaProvider>
-      <StatusBar style={showSplash ? "light" : "dark"} />
-      <Stack
-        screenOptions={{
-          headerShown: false,
-          contentStyle: { backgroundColor: Colors.background },
-          animation: "fade",
-          gestureEnabled: true,
-        }}
-      />
-      {!showSplash ? <BottomNav /> : null}
-      {showSplash ? <AppSplash /> : null}
+      <StatusBar hidden={false} style={showSplash ? "light" : "dark"} />
+      <SystemStatusBarLimit
+        backgroundColor={showSplash ? "#2D5A27" : Colors.background}
+      >
+        <Stack
+          screenOptions={{
+            headerShown: false,
+            contentStyle: { backgroundColor: Colors.background },
+            animation: "fade",
+            gestureEnabled: true,
+            statusBarHidden: false,
+          }}
+        />
+        {!showSplash ? <BottomNav /> : null}
+        {showSplash ? <AppSplash /> : null}
+      </SystemStatusBarLimit>
     </SafeAreaProvider>
   );
 }

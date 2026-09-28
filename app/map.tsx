@@ -156,7 +156,7 @@ export default function MapScreen() {
   }
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={styles.container} edges={["left", "right", "bottom"]}>
       {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity

@@ -30,7 +30,7 @@ const TREE_CARDS = [
 
 export default function FruitTreesScreen() {
   return (
-    <SafeAreaView style={styles.safe}>
+    <SafeAreaView style={styles.safe} edges={["left", "right", "bottom"]}>
       <View style={styles.root}>
         <View style={styles.header}>
           <TouchableOpacity

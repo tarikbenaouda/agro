@@ -430,7 +430,7 @@ export default function HomeScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.safe}>
+    <SafeAreaView style={styles.safe} edges={["left", "right", "bottom"]}>
       <View style={styles.root}>
         <ScrollView
           contentContainerStyle={[

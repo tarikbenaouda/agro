@@ -425,7 +425,7 @@ export default function FarmFieldMap() {
   const mapHeight = mapWidth * (VB_HEIGHT / VB_WIDTH);
 
   return (
-    <SafeAreaView style={styles.screen}>
+    <SafeAreaView style={styles.screen} edges={["left", "right", "bottom"]}>
       <ScrollView
         style={styles.verticalScroll}
         contentContainerStyle={styles.verticalContent}

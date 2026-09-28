@@ -1,7 +1,6 @@
 import { Ionicons } from "@expo/vector-icons";
 import { CameraView, useCameraPermissions } from "expo-camera";
 import { router } from "expo-router";
-import { StatusBar } from "expo-status-bar";
 import { useEffect, useRef } from "react";
 import {
   ActivityIndicator,
@@ -35,9 +34,8 @@ export default function LeafScanScreen() {
 
   if (Platform.OS === "web") {
     return (
-      <SafeAreaView style={styles.outer}>
-        <StatusBar style="dark" />
-        <View style={[styles.toolbar, { paddingTop: Math.max(insets.top, 8) }]}>
+      <SafeAreaView style={styles.outer} edges={["left", "right", "bottom"]}>
+        <View style={[styles.toolbar, { paddingTop: 8 }]}>
           <TouchableOpacity
             style={styles.backBtn}
             onPress={() => router.back()}
@@ -71,9 +69,8 @@ export default function LeafScanScreen() {
 
   if (showPermissionGate) {
     return (
-      <SafeAreaView style={styles.outer}>
-        <StatusBar style="dark" />
-        <View style={[styles.toolbar, { paddingTop: Math.max(insets.top, 8) }]}>
+      <SafeAreaView style={styles.outer} edges={["left", "right", "bottom"]}>
+        <View style={[styles.toolbar, { paddingTop: 8 }]}>
           <TouchableOpacity
             style={styles.backBtn}
             onPress={() => router.back()}
@@ -105,16 +102,10 @@ export default function LeafScanScreen() {
 
   return (
     <View style={styles.cameraRoot}>
-      <StatusBar style="light" />
       <CameraView style={StyleSheet.absoluteFill} facing="back" />
 
       <View style={StyleSheet.absoluteFill} pointerEvents="box-none">
-        <View
-          style={[
-            styles.topBar,
-            { paddingTop: Math.max(insets.top, 12), paddingHorizontal: 12 },
-          ]}
-        >
+        <View style={[styles.topBar, { paddingTop: 12, paddingHorizontal: 12 }]}>
           <TouchableOpacity
             style={styles.backBtnLight}
             onPress={() => router.back()}

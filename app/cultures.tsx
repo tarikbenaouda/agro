@@ -14,7 +14,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function CulturesScreen() {
   return (
-    <SafeAreaView style={styles.safe}>
+    <SafeAreaView style={styles.safe} edges={["left", "right", "bottom"]}>
       <View style={styles.root}>
         <View style={styles.header}>
           <TouchableOpacity
