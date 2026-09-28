@@ -315,9 +315,9 @@ const EdgeBlur = ({ side }: { side: "left" | "right" }) => (
     }
   >
     <BlurView
-      intensity={40}
+      intensity={75}
       tint="light"
-      experimentalBlurMethod="dimezisBlurView"
+      blurMethod="dimezisBlurView"
       style={StyleSheet.absoluteFill}
     />
   </MaskedView>
