@@ -25,7 +25,13 @@ type CropCard = {
   status: string;
   image: string | ImageSourcePropType;
   accent: string;
-  route?: "/program/olive" | "/program/orange" | "/fruit-trees" | "/cereales";
+  route?:
+    | "/program/olive"
+    | "/program/orange"
+    | "/fruit-trees"
+    | "/cereales"
+    | "/cultures-fourrageres"
+    | "/legumes";
 };
 
 type WeatherIconName = React.ComponentProps<typeof Ionicons>["name"];
@@ -156,6 +162,7 @@ const CROP_CARDS: CropCard[] = [
     image:
       "https://images.unsplash.com/photo-1500595046743-cd271d694d30?auto=format&fit=crop&w=900&q=80",
     accent: "#6b8f72",
+    route: "/cultures-fourrageres",
   },
   {
     title: "Les légumes",
@@ -163,6 +170,7 @@ const CROP_CARDS: CropCard[] = [
     image:
       "https://images.unsplash.com/photo-1464226184884-fa280b87c399?auto=format&fit=crop&w=900&q=80",
     accent: "#b71c1c",
+    route: "/legumes",
   },
 ];
 
@@ -378,7 +386,13 @@ export default function HomeScreen() {
   );
 
   const openCrop = (
-    route?: "/program/olive" | "/program/orange" | "/fruit-trees" | "/cereales",
+    route?:
+      | "/program/olive"
+      | "/program/orange"
+      | "/fruit-trees"
+      | "/cereales"
+      | "/cultures-fourrageres"
+      | "/legumes",
   ) => {
     if (!route) return;
     router.push(route);
