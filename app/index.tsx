@@ -481,7 +481,7 @@ export default function HomeScreen() {
 
           <View style={styles.farmSectionHeader}>
             <Text style={styles.sectionTitle}>Ma ferme</Text>
-            <Text style={styles.farmSectionHint}>Vue d'ensemble</Text>
+            <Text style={styles.farmSectionHint}>Vue d&apos;ensemble</Text>
           </View>
 
           <TouchableOpacity
@@ -494,7 +494,9 @@ export default function HomeScreen() {
               style={styles.farmImage}
             />
             <View style={styles.farmCardBody}>
-              <Text style={styles.farmCardTitle}>Plan de l'exploitation</Text>
+              <Text style={styles.farmCardTitle}>
+                Plan de l&apos;exploitation
+              </Text>
               <Text style={styles.farmCardSubtitle}>
                 Visualisez vos parcelles et leurs mesures au même endroit.
               </Text>
