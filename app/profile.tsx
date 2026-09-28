@@ -20,7 +20,9 @@ export default function ProfileScreen() {
       >
         <View style={styles.headerRow}>
           <TouchableOpacity
-            onPress={() => router.canGoBack() ? router.back() : router.replace("/")}
+            onPress={() =>
+              router.canGoBack() ? router.back() : router.replace("/")
+            }
             style={styles.backBtn}
             activeOpacity={0.8}
           >
@@ -40,7 +42,7 @@ export default function ProfileScreen() {
 
           <View style={styles.statsRow}>
             <View style={styles.statItem}>
-              <Text style={styles.statValue}>12</Text>
+              <Text style={styles.statValue}>19</Text>
               <Text style={styles.statLabel}>Parcelles</Text>
             </View>
             <View style={styles.statItem}>
