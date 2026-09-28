@@ -1,6 +1,9 @@
 import { Colors } from "@/constants/colors";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import MaskedView from "@react-native-masked-view/masked-view";
+import { BlurView } from "expo-blur";
+import { LinearGradient } from "expo-linear-gradient";
 import * as Location from "expo-location";
 import { router, useFocusEffect } from "expo-router";
 import React, { useCallback, useState } from "react";
@@ -20,18 +23,20 @@ import {
   useSafeAreaInsets,
 } from "react-native-safe-area-context";
 
+type CropRoute =
+  | "/program/olive"
+  | "/program/orange"
+  | "/fruit-trees"
+  | "/cereales"
+  | "/cultures-fourrageres"
+  | "/legumes";
+
 type CropCard = {
   title: string;
   status: string;
   image: string | ImageSourcePropType;
   accent: string;
-  route?:
-    | "/program/olive"
-    | "/program/orange"
-    | "/fruit-trees"
-    | "/cereales"
-    | "/cultures-fourrageres"
-    | "/legumes";
+  route?: CropRoute;
 };
 
 type WeatherIconName = React.ComponentProps<typeof Ionicons>["name"];
@@ -46,6 +51,12 @@ type WeatherSnapshot = {
   icon: WeatherIconName;
   iconColor: string;
 };
+
+// Horizontal padding of the screen. The carousel cancels it with a negative
+// margin so cards can scroll to the real screen edge, and the blur zones
+// use the same width.
+const SCREEN_PADDING = 20;
+const EDGE_WIDTH = SCREEN_PADDING;
 
 const DEFAULT_WEATHER: WeatherSnapshot = {
   temperature: "--°C",
@@ -284,6 +295,34 @@ const NOTIFICATIONS = [
   },
 ];
 
+// Blur that fades from fully blurred at the screen edge to fully sharp
+// on the inner side. Cards get progressively blurred as they slide into it.
+const EdgeBlur = ({ side }: { side: "left" | "right" }) => (
+  <MaskedView
+    pointerEvents="none"
+    style={[styles.edgeBlur, side === "left" ? { left: 0 } : { right: 0 }]}
+    maskElement={
+      <LinearGradient
+        colors={
+          side === "left"
+            ? ["rgba(0,0,0,1)", "rgba(0,0,0,0)"]
+            : ["rgba(0,0,0,0)", "rgba(0,0,0,1)"]
+        }
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 0 }}
+        style={StyleSheet.absoluteFill}
+      />
+    }
+  >
+    <BlurView
+      intensity={40}
+      tint="light"
+      experimentalBlurMethod="dimezisBlurView"
+      style={StyleSheet.absoluteFill}
+    />
+  </MaskedView>
+);
+
 export default function HomeScreen() {
   const insets = useSafeAreaInsets();
   const [weather, setWeather] = useState<WeatherSnapshot>(DEFAULT_WEATHER);
@@ -385,15 +424,7 @@ export default function HomeScreen() {
     }, []),
   );
 
-  const openCrop = (
-    route?:
-      | "/program/olive"
-      | "/program/orange"
-      | "/fruit-trees"
-      | "/cereales"
-      | "/cultures-fourrageres"
-      | "/legumes",
-  ) => {
+  const openCrop = (route?: CropRoute) => {
     if (!route) return;
     router.push(route);
   };
@@ -543,13 +574,14 @@ export default function HomeScreen() {
             </TouchableOpacity>
           </View>
 
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={styles.cropRow}
-          >
-            {CROP_CARDS.map((crop) => {
-              return (
+          {/* Carousel: extends to the screen edges, with blurred edge zones */}
+          <View style={styles.cropRowWrap}>
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={styles.cropRow}
+            >
+              {CROP_CARDS.map((crop) => (
                 <TouchableOpacity
                   key={crop.title}
                   style={styles.cropCard}
@@ -578,9 +610,12 @@ export default function HomeScreen() {
                     </View>
                   </View>
                 </TouchableOpacity>
-              );
-            })}
-          </ScrollView>
+              ))}
+            </ScrollView>
+
+            <EdgeBlur side="left" />
+            <EdgeBlur side="right" />
+          </View>
 
           <View style={styles.farmSectionHeader}>
             <Text style={styles.sectionTitle}>Ma ferme</Text>
@@ -668,7 +703,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#F4FAF2",
   },
   scrollContent: {
-    paddingHorizontal: 20,
+    paddingHorizontal: SCREEN_PADDING,
     paddingTop: 10,
   },
   header: {
@@ -823,10 +858,23 @@ const styles = StyleSheet.create({
     fontFamily: "Poppins_600SemiBold",
     color: stylesData.primary,
   },
-  cropRow: {
-    paddingRight: 4,
-    gap: 14,
+
+  // ── Mes Cultures carousel ─────────────────────────────────
+  cropRowWrap: {
+    // Cancel the screen padding so the scroll view reaches both screen edges
+    marginHorizontal: -SCREEN_PADDING,
     marginBottom: 24,
+  },
+  cropRow: {
+    // Re-add the padding inside the scrollable content
+    paddingHorizontal: SCREEN_PADDING,
+    gap: 14,
+  },
+  edgeBlur: {
+    position: "absolute",
+    top: 0,
+    bottom: 0,
+    width: EDGE_WIDTH,
   },
   cropCard: {
     width: 160,
@@ -844,6 +892,32 @@ const styles = StyleSheet.create({
   cropCardDisabled: {
     opacity: 0.7,
   },
+  cropImage: {
+    width: "100%",
+    height: 110,
+    backgroundColor: "#dfe9dd",
+  },
+  cropCardBody: {
+    padding: 12,
+    gap: 10,
+  },
+  cropTitle: {
+    fontSize: 16,
+    fontFamily: "Poppins_700Bold",
+    color: "#17331a",
+  },
+  statusBadge: {
+    alignSelf: "flex-start",
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 999,
+  },
+  statusText: {
+    fontSize: 12,
+    fontFamily: "Poppins_600SemiBold",
+  },
+
+  // ── Ma ferme ──────────────────────────────────────────────
   farmSectionHeader: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -899,30 +973,8 @@ const styles = StyleSheet.create({
     fontFamily: "Poppins_700Bold",
     color: stylesData.primary,
   },
-  cropImage: {
-    width: "100%",
-    height: 110,
-    backgroundColor: "#dfe9dd",
-  },
-  cropCardBody: {
-    padding: 12,
-    gap: 10,
-  },
-  cropTitle: {
-    fontSize: 16,
-    fontFamily: "Poppins_700Bold",
-    color: "#17331a",
-  },
-  statusBadge: {
-    alignSelf: "flex-start",
-    paddingHorizontal: 10,
-    paddingVertical: 6,
-    borderRadius: 999,
-  },
-  statusText: {
-    fontSize: 12,
-    fontFamily: "Poppins_600SemiBold",
-  },
+
+  // ── Tasks ─────────────────────────────────────────────────
   taskList: {
     gap: 12,
   },
@@ -957,6 +1009,8 @@ const styles = StyleSheet.create({
     fontFamily: "Poppins_400Regular",
     color: "#7b8c79",
   },
+
+  // ── Bottom bar (unused here, kept from original) ──────────
   bottomBarWrap: {
     position: "absolute",
     left: 0,
@@ -1018,6 +1072,7 @@ const styles = StyleSheet.create({
     borderWidth: 4,
     borderColor: "#ffffff",
   },
+
   // ── Notification popover ──────────────────────────────────
   notifOverlay: {
     flex: 1,
