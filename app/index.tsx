@@ -7,6 +7,8 @@ import React, { useCallback, useState } from "react";
 import {
   Image,
   ImageSourcePropType,
+  Modal,
+  Pressable,
   ScrollView,
   StyleSheet,
   Text,
@@ -235,11 +237,51 @@ const createDailyTasks = (): DailyTask[] => {
   return [...DAILY_TASK_POOL].sort(() => Math.random() - 0.5).slice(0, 3);
 };
 
+const NOTIFICATIONS = [
+  {
+    id: "1",
+    icon: "water" as const,
+    title: "Irrigation programmée",
+    body: "La parcelle P14 sera irriguée demain à 06:30.",
+    time: "Il y a 15 min",
+    color: "#2196F3",
+    bg: "#e3f2fd",
+  },
+  {
+    id: "2",
+    icon: "alert-circle" as const,
+    title: "Alerte ravageurs",
+    body: "Des pucerons ont été détectés sur la culture d'oliviers.",
+    time: "Il y a 1 h",
+    color: "#e53935",
+    bg: "#ffebee",
+  },
+  {
+    id: "3",
+    icon: "leaf" as const,
+    title: "Fertilisation recommandée",
+    body: "Apportez de l'azote à la parcelle est cette semaine.",
+    time: "Il y a 3 h",
+    color: "#43a047",
+    bg: "#e8f5e9",
+  },
+  {
+    id: "4",
+    icon: "weather-rainy" as const,
+    title: "Prévisions météo",
+    body: "Des pluies modérées attendues dans 2 jours.",
+    time: "Il y a 5 h",
+    color: "#546e7a",
+    bg: "#eceff1",
+  },
+];
+
 export default function HomeScreen() {
   const insets = useSafeAreaInsets();
   const [weather, setWeather] = useState<WeatherSnapshot>(DEFAULT_WEATHER);
   const [isWeatherLoading, setIsWeatherLoading] = useState(true);
   const [dailyTasks] = useState<DailyTask[]>(createDailyTasks);
+  const [showNotifications, setShowNotifications] = useState(false);
 
   useFocusEffect(
     useCallback(() => {
@@ -373,6 +415,7 @@ export default function HomeScreen() {
             <TouchableOpacity
               style={styles.headerIconButton}
               activeOpacity={0.75}
+              onPress={() => setShowNotifications(true)}
             >
               <View style={styles.bellWrap}>
                 <Ionicons
@@ -384,6 +427,52 @@ export default function HomeScreen() {
               </View>
             </TouchableOpacity>
           </View>
+
+          {/* Notifications Modal */}
+          <Modal
+            visible={showNotifications}
+            transparent
+            animationType="fade"
+            onRequestClose={() => setShowNotifications(false)}
+          >
+            <Pressable
+              style={styles.notifOverlay}
+              onPress={() => setShowNotifications(false)}
+            >
+              <Pressable style={styles.notifPanel} onPress={() => {}}>
+                <View style={styles.notifHeader}>
+                  <Text style={styles.notifTitle}>Notifications</Text>
+                  <TouchableOpacity onPress={() => setShowNotifications(false)}>
+                    <Ionicons name="close" size={22} color="#4a5e48" />
+                  </TouchableOpacity>
+                </View>
+                {NOTIFICATIONS.map((n, idx) => (
+                  <View
+                    key={n.id}
+                    style={[
+                      styles.notifItem,
+                      idx < NOTIFICATIONS.length - 1 && styles.notifItemBorder,
+                    ]}
+                  >
+                    <View
+                      style={[styles.notifIconWrap, { backgroundColor: n.bg }]}
+                    >
+                      <MaterialCommunityIcons
+                        name={n.icon}
+                        size={20}
+                        color={n.color}
+                      />
+                    </View>
+                    <View style={styles.notifBody}>
+                      <Text style={styles.notifItemTitle}>{n.title}</Text>
+                      <Text style={styles.notifItemBody}>{n.body}</Text>
+                      <Text style={styles.notifItemTime}>{n.time}</Text>
+                    </View>
+                  </View>
+                ))}
+              </Pressable>
+            </Pressable>
+          </Modal>
 
           <View style={styles.greetingBlock}>
             <Text style={styles.greetingTitle}>Bonjour, Abdenour! 🍃</Text>
@@ -914,5 +1003,79 @@ const styles = StyleSheet.create({
     elevation: 6,
     borderWidth: 4,
     borderColor: "#ffffff",
+  },
+  // ── Notification popover ──────────────────────────────────
+  notifOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.35)",
+    justifyContent: "flex-start",
+    alignItems: "flex-end",
+    paddingTop: 60,
+    paddingRight: 14,
+  },
+  notifPanel: {
+    width: 310,
+    backgroundColor: "#ffffff",
+    borderRadius: 18,
+    shadowColor: "#000",
+    shadowOpacity: 0.15,
+    shadowRadius: 20,
+    shadowOffset: { width: 0, height: 8 },
+    elevation: 10,
+    overflow: "hidden",
+  },
+  notifHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingHorizontal: 16,
+    paddingVertical: 14,
+    borderBottomWidth: 1,
+    borderBottomColor: "#edf3ec",
+  },
+  notifTitle: {
+    fontSize: 16,
+    fontFamily: "Poppins_700Bold",
+    color: "#17331a",
+  },
+  notifItem: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    gap: 12,
+  },
+  notifItemBorder: {
+    borderBottomWidth: 1,
+    borderBottomColor: "#f0f6ef",
+  },
+  notifIconWrap: {
+    width: 38,
+    height: 38,
+    borderRadius: 12,
+    alignItems: "center",
+    justifyContent: "center",
+    flexShrink: 0,
+  },
+  notifBody: {
+    flex: 1,
+    gap: 2,
+  },
+  notifItemTitle: {
+    fontSize: 13.5,
+    fontFamily: "Poppins_600SemiBold",
+    color: "#1b321c",
+  },
+  notifItemBody: {
+    fontSize: 12,
+    fontFamily: "Poppins_400Regular",
+    color: "#5f765e",
+    lineHeight: 17,
+  },
+  notifItemTime: {
+    fontSize: 11,
+    fontFamily: "Poppins_400Regular",
+    color: "#9eb09c",
+    marginTop: 2,
   },
 });
