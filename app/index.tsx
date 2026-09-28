@@ -868,6 +868,7 @@ const styles = StyleSheet.create({
   cropRow: {
     // Re-add the padding inside the scrollable content
     paddingHorizontal: SCREEN_PADDING,
+    paddingBottom: 4, // ← space below the cards
     gap: 14,
   },
   edgeBlur: {
