@@ -30,7 +30,8 @@ function buildLeafletHTML(lat: number, lon: number): string {
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <style>
     html, body, #map { height: 100%; margin: 0; padding: 0; }
-    body { background: #f3f7f1; }
+    body { background: #c8dfc4; }
+    .leaflet-tile-container img { background: #c8dfc4; }
   </style>
 </head>
 <body>
@@ -40,7 +41,10 @@ function buildLeafletHTML(lat: number, lon: number): string {
 
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-    maxZoom: 19
+    maxZoom: 19,
+    keepBuffer: 5,
+    updateWhenIdle: true,
+    updateWhenZooming: true
   }).addTo(map);
 
   var marker = L.marker([${lat}, ${lon}], { draggable: true }).addTo(map);
