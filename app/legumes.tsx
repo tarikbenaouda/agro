@@ -31,7 +31,7 @@ export default function LegumesScreen() {
           <MaterialCommunityIcons name="carrot" size={72} color="#f5c6c6" />
           <Text style={styles.emptyTitle}>Aucun légume</Text>
           <Text style={styles.emptySubtitle}>
-            Vous n'avez pas encore ajouté de culture dans cette catégorie.
+            Vous n&apos;avez pas encore ajouté de culture dans cette catégorie.
           </Text>
           <TouchableOpacity
             style={styles.createButton}

@@ -31,7 +31,7 @@ export default function CulturesFourragereScreen() {
           <MaterialCommunityIcons name="grass" size={72} color="#c8ddc9" />
           <Text style={styles.emptyTitle}>Aucune culture fourragère</Text>
           <Text style={styles.emptySubtitle}>
-            Vous n'avez pas encore ajouté de culture dans cette catégorie.
+            Vous n&apos;avez pas encore ajouté de culture dans cette catégorie.
           </Text>
           <TouchableOpacity
             style={styles.createButton}
