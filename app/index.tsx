@@ -921,7 +921,7 @@ const styles = StyleSheet.create({
     color: "#ffffff",
   },
   weatherCondition: {
-    fontSize: 14,
+    fontSize: 11,
     fontFamily: "Poppins_400Regular",
     color: "#d7ead5",
     marginTop: 2,
