@@ -52,6 +52,13 @@ type WeatherSnapshot = {
   iconColor: string;
 };
 
+type Project = {
+  id: string;
+  name: string;
+  category: string;
+  icon: React.ComponentProps<typeof MaterialCommunityIcons>["name"];
+};
+
 // Horizontal padding of the screen. The carousel cancels it with a negative
 // margin so cards can scroll to the real screen edge, and the blur zones
 // use the same width.
@@ -295,6 +302,16 @@ const NOTIFICATIONS = [
   },
 ];
 
+// Prototype data: only one project for now
+const PROJECTS: Project[] = [
+  {
+    id: "1",
+    name: "Ma ferme",
+    category: "Investissement agricole",
+    icon: "sprout",
+  },
+];
+
 // Blur that fades from fully blurred at the screen edge to fully sharp
 // on the inner side. Cards get progressively blurred as they slide into it.
 const EdgeBlur = ({
@@ -336,6 +353,8 @@ export default function HomeScreen() {
   const [isWeatherLoading, setIsWeatherLoading] = useState(true);
   const [dailyTasks] = useState<DailyTask[]>(createDailyTasks);
   const [showNotifications, setShowNotifications] = useState(false);
+  const [showProjects, setShowProjects] = useState(false);
+  const [selectedProjectId, setSelectedProjectId] = useState(PROJECTS[0].id);
 
   const cropCarouselRef = useRef<View>(null);
 
@@ -453,6 +472,7 @@ export default function HomeScreen() {
             <TouchableOpacity
               style={styles.headerIconButton}
               activeOpacity={0.75}
+              onPress={() => setShowProjects(true)}
             >
               <Ionicons name="menu" size={24} color={stylesData.icon} />
             </TouchableOpacity>
@@ -481,6 +501,76 @@ export default function HomeScreen() {
               </View>
             </TouchableOpacity>
           </View>
+
+          {/* Projects Modal */}
+          <Modal
+            visible={showProjects}
+            transparent
+            animationType="fade"
+            onRequestClose={() => setShowProjects(false)}
+          >
+            <Pressable
+              style={styles.projOverlay}
+              onPress={() => setShowProjects(false)}
+            >
+              <Pressable style={styles.projPanel} onPress={() => {}}>
+                <View style={styles.notifHeader}>
+                  <Text style={styles.notifTitle}>Mes projets</Text>
+                  <TouchableOpacity onPress={() => setShowProjects(false)}>
+                    <Ionicons name="close" size={22} color="#4a5e48" />
+                  </TouchableOpacity>
+                </View>
+
+                {PROJECTS.map((p) => {
+                  const selected = p.id === selectedProjectId;
+                  return (
+                    <TouchableOpacity
+                      key={p.id}
+                      activeOpacity={0.8}
+                      style={[
+                        styles.projItem,
+                        selected && styles.projItemSelected,
+                      ]}
+                      onPress={() => {
+                        setSelectedProjectId(p.id);
+                        setShowProjects(false);
+                      }}
+                    >
+                      <View style={styles.projIconWrap}>
+                        <MaterialCommunityIcons
+                          name={p.icon}
+                          size={20}
+                          color={stylesData.primary}
+                        />
+                      </View>
+                      <View style={styles.projInfo}>
+                        <Text style={styles.projName}>{p.name}</Text>
+                        <Text style={styles.projCategory}>{p.category}</Text>
+                      </View>
+                      {selected && (
+                        <Ionicons
+                          name="checkmark-circle"
+                          size={22}
+                          color={stylesData.primary}
+                        />
+                      )}
+                    </TouchableOpacity>
+                  );
+                })}
+
+                <TouchableOpacity
+                  style={styles.projAddButton}
+                  activeOpacity={0.85}
+                  onPress={() => {
+                    // Prototype: intentionally does nothing
+                  }}
+                >
+                  <Ionicons name="add" size={20} color="#ffffff" />
+                  <Text style={styles.projAddText}>Ajouter un projet</Text>
+                </TouchableOpacity>
+              </Pressable>
+            </Pressable>
+          </Modal>
 
           {/* Notifications Modal */}
           <Modal
@@ -1165,5 +1255,73 @@ const styles = StyleSheet.create({
     fontFamily: "Poppins_400Regular",
     color: "#9eb09c",
     marginTop: 2,
+  },
+
+  // ── Projects popover ──────────────────────────────────────
+  projOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.35)",
+    justifyContent: "flex-start",
+    alignItems: "flex-start", // anchored top-left, under the hamburger
+    paddingTop: 60,
+    paddingLeft: 14,
+  },
+  projPanel: {
+    width: 300,
+    backgroundColor: "#ffffff",
+    borderRadius: 18,
+    shadowColor: "#000",
+    shadowOpacity: 0.15,
+    shadowRadius: 20,
+    shadowOffset: { width: 0, height: 8 },
+    elevation: 10,
+    overflow: "hidden",
+  },
+  projItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+  },
+  projItemSelected: {
+    backgroundColor: "#eaf4e7",
+  },
+  projIconWrap: {
+    width: 38,
+    height: 38,
+    borderRadius: 12,
+    backgroundColor: "#dcefd9",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  projInfo: {
+    flex: 1,
+    gap: 2,
+  },
+  projName: {
+    fontSize: 14,
+    fontFamily: "Poppins_600SemiBold",
+    color: "#1b321c",
+  },
+  projCategory: {
+    fontSize: 12,
+    fontFamily: "Poppins_400Regular",
+    color: "#5f765e",
+  },
+  projAddButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 6,
+    margin: 14,
+    paddingVertical: 12,
+    borderRadius: 14,
+    backgroundColor: stylesData.primary,
+  },
+  projAddText: {
+    fontSize: 13.5,
+    fontFamily: "Poppins_600SemiBold",
+    color: "#ffffff",
   },
 });
