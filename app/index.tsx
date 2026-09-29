@@ -815,15 +815,15 @@ const styles = StyleSheet.create({
   },
   headerWrap: {
     paddingHorizontal: SCREEN_PADDING,
-    paddingTop: 10,
-    paddingBottom: 12,
+    paddingTop: 4,
+    paddingBottom: 6,
     backgroundColor: "#F4FAF2",
   },
   header: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    height: 56,
+    height: 44,
   },
   headerIconButton: {
     width: 44,
