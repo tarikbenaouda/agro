@@ -460,14 +460,8 @@ export default function HomeScreen() {
   return (
     <SafeAreaView style={styles.safe} edges={["left", "right", "bottom"]}>
       <View style={styles.root}>
-        <ScrollView
-          contentContainerStyle={[
-            styles.scrollContent,
-            { paddingBottom: 130 + insets.bottom },
-          ]}
-          showsVerticalScrollIndicator={false}
-        >
-          {/* Header */}
+        {/* Fixed header */}
+        <View style={styles.headerWrap}>
           <View style={styles.header}>
             <TouchableOpacity
               style={styles.headerIconButton}
@@ -501,7 +495,15 @@ export default function HomeScreen() {
               </View>
             </TouchableOpacity>
           </View>
+        </View>
 
+        <ScrollView
+          contentContainerStyle={[
+            styles.scrollContent,
+            { paddingBottom: 130 + insets.bottom },
+          ]}
+          showsVerticalScrollIndicator={false}
+        >
           {/* Projects Modal */}
           <Modal
             visible={showProjects}
@@ -639,9 +641,9 @@ export default function HomeScreen() {
                     color={weather.iconColor}
                   />
                 </View>
-                <View>
+                <View style={{ flexShrink: 1 }}>
                   <Text style={styles.weatherTemp}>{weather.temperature}</Text>
-                  <Text style={styles.weatherCondition}>
+                  <Text style={styles.weatherCondition} numberOfLines={1}>
                     {isWeatherLoading
                       ? "Chargement météo..."
                       : weather.condition}
@@ -809,13 +811,18 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     paddingHorizontal: SCREEN_PADDING,
+    paddingTop: 12,
+  },
+  headerWrap: {
+    paddingHorizontal: SCREEN_PADDING,
     paddingTop: 10,
+    paddingBottom: 12,
+    backgroundColor: "#F4FAF2",
   },
   header: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    marginBottom: 24,
     height: 56,
   },
   headerIconButton: {
@@ -921,7 +928,7 @@ const styles = StyleSheet.create({
     color: "#ffffff",
   },
   weatherCondition: {
-    fontSize: 11,
+    fontSize: 12,
     fontFamily: "Poppins_400Regular",
     color: "#d7ead5",
     marginTop: 2,
