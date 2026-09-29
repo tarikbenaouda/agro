@@ -380,6 +380,11 @@ const CONTROL_SYSTEM = {
   label: { x: 590, y: 261 },
 };
 
+const WATER_TANK = {
+  points: "540,280 640,280 640,340 540,340",
+  label: { x: 590, y: 314 },
+};
+
 function fillFor(parcel: Parcel, isSelected: boolean): string {
   if (parcel.type === "serre") return COLORS.serre;
   if (parcel.type === "olivier")
@@ -524,6 +529,24 @@ export default function FarmFieldMap() {
                   textAnchor="middle"
                 >
                   Système de contrôle
+                </SvgText>
+              </G>
+              <G pointerEvents="none">
+                <Polygon
+                  points={WATER_TANK.points}
+                  fill="#8ec5f0"
+                  stroke="#2a6fb0"
+                  strokeWidth={1.5}
+                />
+                <SvgText
+                  x={WATER_TANK.label.x}
+                  y={WATER_TANK.label.y}
+                  fontSize={10}
+                  fontWeight="bold"
+                  fill="#12446f"
+                  textAnchor="middle"
+                >
+                  Réservoir d&apos;eau
                 </SvgText>
               </G>
             </G>
