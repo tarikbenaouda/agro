@@ -2,11 +2,11 @@ import { Colors } from "@/constants/colors";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import MaskedView from "@react-native-masked-view/masked-view";
-import { BlurView } from "expo-blur";
+import { BlurTargetView, BlurView } from "expo-blur";
 import { LinearGradient } from "expo-linear-gradient";
 import * as Location from "expo-location";
 import { router, useFocusEffect } from "expo-router";
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useRef, useState } from "react";
 import {
   Image,
   ImageSourcePropType,
@@ -297,7 +297,13 @@ const NOTIFICATIONS = [
 
 // Blur that fades from fully blurred at the screen edge to fully sharp
 // on the inner side. Cards get progressively blurred as they slide into it.
-const EdgeBlur = ({ side }: { side: "left" | "right" }) => (
+const EdgeBlur = ({
+  side,
+  blurTarget,
+}: {
+  side: "left" | "right";
+  blurTarget: React.RefObject<View | null>;
+}) => (
   <MaskedView
     pointerEvents="none"
     style={[styles.edgeBlur, side === "left" ? { left: 0 } : { right: 0 }]}
@@ -315,9 +321,10 @@ const EdgeBlur = ({ side }: { side: "left" | "right" }) => (
     }
   >
     <BlurView
-      intensity={75}
+      intensity={80}
       tint="light"
       blurMethod="dimezisBlurView"
+      blurTarget={blurTarget}
       style={StyleSheet.absoluteFill}
     />
   </MaskedView>
@@ -329,6 +336,8 @@ export default function HomeScreen() {
   const [isWeatherLoading, setIsWeatherLoading] = useState(true);
   const [dailyTasks] = useState<DailyTask[]>(createDailyTasks);
   const [showNotifications, setShowNotifications] = useState(false);
+
+  const cropCarouselRef = useRef<View>(null);
 
   useFocusEffect(
     useCallback(() => {
@@ -576,45 +585,51 @@ export default function HomeScreen() {
 
           {/* Carousel: extends to the screen edges, with blurred edge zones */}
           <View style={styles.cropRowWrap}>
-            <ScrollView
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              contentContainerStyle={styles.cropRow}
-            >
-              {CROP_CARDS.map((crop) => (
-                <TouchableOpacity
-                  key={crop.title}
-                  style={styles.cropCard}
-                  activeOpacity={0.85}
-                  onPress={crop.route ? () => openCrop(crop.route) : undefined}
-                >
-                  <Image
-                    source={
-                      typeof crop.image === "string"
-                        ? { uri: crop.image }
-                        : crop.image
+            <BlurTargetView>
+              <ScrollView
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={styles.cropRow}
+              >
+                {CROP_CARDS.map((crop) => (
+                  <TouchableOpacity
+                    key={crop.title}
+                    style={styles.cropCard}
+                    activeOpacity={0.85}
+                    onPress={
+                      crop.route ? () => openCrop(crop.route) : undefined
                     }
-                    style={styles.cropImage}
-                  />
-                  <View style={styles.cropCardBody}>
-                    <Text style={styles.cropTitle}>{crop.title}</Text>
-                    <View
-                      style={[
-                        styles.statusBadge,
-                        { backgroundColor: crop.accent + "18" },
-                      ]}
-                    >
-                      <Text style={[styles.statusText, { color: crop.accent }]}>
-                        {crop.status}
-                      </Text>
+                  >
+                    <Image
+                      source={
+                        typeof crop.image === "string"
+                          ? { uri: crop.image }
+                          : crop.image
+                      }
+                      style={styles.cropImage}
+                    />
+                    <View style={styles.cropCardBody}>
+                      <Text style={styles.cropTitle}>{crop.title}</Text>
+                      <View
+                        style={[
+                          styles.statusBadge,
+                          { backgroundColor: crop.accent + "18" },
+                        ]}
+                      >
+                        <Text
+                          style={[styles.statusText, { color: crop.accent }]}
+                        >
+                          {crop.status}
+                        </Text>
+                      </View>
                     </View>
-                  </View>
-                </TouchableOpacity>
-              ))}
-            </ScrollView>
+                  </TouchableOpacity>
+                ))}
+              </ScrollView>
+            </BlurTargetView>
 
-            <EdgeBlur side="left" />
-            <EdgeBlur side="right" />
+            <EdgeBlur side="left" blurTarget={cropCarouselRef} />
+            <EdgeBlur side="right" blurTarget={cropCarouselRef} />
           </View>
 
           <View style={styles.farmSectionHeader}>
@@ -906,6 +921,9 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: "Poppins_700Bold",
     color: "#17331a",
+  },
+  cropRowTarget: {
+    flex: 1,
   },
   statusBadge: {
     alignSelf: "flex-start",
