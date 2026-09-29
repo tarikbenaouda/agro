@@ -65,13 +65,17 @@ type Project = {
 const SCREEN_PADDING = 20;
 const EDGE_WIDTH = SCREEN_PADDING;
 
+// Fallback position used when no location has been saved
+const DEFAULT_COORD = { latitude: 35.7412, longitude: 0.5559 };
+const DEFAULT_LOCATION_LABEL = "Relizane, Algérie";
+
 const DEFAULT_WEATHER: WeatherSnapshot = {
   temperature: "--°C",
   condition: "Météo indisponible",
   humidity: "--",
   wind: "--",
   todayRange: "-- / --",
-  location: "Position indisponible",
+  location: DEFAULT_LOCATION_LABEL,
   icon: "cloud-outline",
   iconColor: "#d8e6d6",
 };
@@ -138,6 +142,9 @@ const weatherFromCode = (
   };
 };
 
+const coordLabel = (lat: number, lon: number) =>
+  `${lat.toFixed(2)}, ${lon.toFixed(2)}`;
+
 const formatLocationLabel = (
   reverseGeocode: Location.LocationGeocodedAddress[],
   lat: number,
@@ -145,7 +152,7 @@ const formatLocationLabel = (
 ): string => {
   const first = reverseGeocode[0];
   if (!first) {
-    return `${lat.toFixed(2)}, ${lon.toFixed(2)}`;
+    return coordLabel(lat, lon);
   }
 
   const city = first.city || first.subregion || first.region;
@@ -155,7 +162,58 @@ const formatLocationLabel = (
   if (city) return city;
   if (country) return country;
 
-  return `${lat.toFixed(2)}, ${lon.toFixed(2)}`;
+  return coordLabel(lat, lon);
+};
+
+// Never throws. Tries the system geocoder, then Nominatim, then raw coordinates.
+const resolveLocationLabel = async (
+  latitude: number,
+  longitude: number,
+): Promise<string> => {
+  // 1) expo-location (often fails on Android release builds)
+  try {
+    const result = await Location.reverseGeocodeAsync({ latitude, longitude });
+    const label = formatLocationLabel(result, latitude, longitude);
+    if (label !== coordLabel(latitude, longitude)) return label;
+  } catch (e) {
+    console.warn("expo reverse geocode failed", e);
+  }
+
+  // 2) Nominatim (network fallback, 4s timeout)
+  try {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 4000);
+    const res = await fetch(
+      `https://nominatim.openstreetmap.org/reverse?format=json&zoom=10&accept-language=fr&lat=${latitude}&lon=${longitude}`,
+      {
+        headers: { "User-Agent": "AgroApp/1.0" },
+        signal: controller.signal,
+      },
+    );
+    clearTimeout(timer);
+    if (res.ok) {
+      const data: {
+        address?: {
+          city?: string;
+          town?: string;
+          village?: string;
+          county?: string;
+          state?: string;
+          country?: string;
+        };
+      } = await res.json();
+      const a = data.address;
+      const place = a?.city || a?.town || a?.village || a?.county || a?.state;
+      if (place && a?.country) return `${place}, ${a.country}`;
+      if (place) return place;
+      if (a?.country) return a.country;
+    }
+  } catch (e) {
+    console.warn("nominatim reverse geocode failed", e);
+  }
+
+  // 3) raw coordinates
+  return coordLabel(latitude, longitude);
 };
 
 const CROP_CARDS: CropCard[] = [
@@ -363,29 +421,56 @@ export default function HomeScreen() {
       let mounted = true;
 
       const loadWeather = async () => {
+        setIsWeatherLoading(true);
+
+        // Resolve coordinates (saved -> default)
+        let latitude = DEFAULT_COORD.latitude;
+        let longitude = DEFAULT_COORD.longitude;
+        let usingDefault = true;
+
         try {
-          let latitude = 35.7412; // Default to Relizane, Algeria
-          let longitude = 0.5559;
-
-          try {
-            const savedLoc = await AsyncStorage.getItem("selectedLocation");
-            if (savedLoc) {
-              const loc = JSON.parse(savedLoc);
-              if (loc.latitude && loc.longitude) {
-                latitude = loc.latitude;
-                longitude = loc.longitude;
-              }
+          const savedLoc = await AsyncStorage.getItem("selectedLocation");
+          if (savedLoc) {
+            const loc = JSON.parse(savedLoc);
+            if (
+              typeof loc.latitude === "number" &&
+              typeof loc.longitude === "number"
+            ) {
+              latitude = loc.latitude;
+              longitude = loc.longitude;
+              usingDefault = false;
             }
-          } catch (e) {
-            console.error("Failed to load location from storage", e);
           }
+        } catch (e) {
+          console.error("Failed to load location from storage", e);
+        }
 
-          const [reverseGeocode, weatherResponse] = await Promise.all([
-            Location.reverseGeocodeAsync({ latitude, longitude }),
-            fetch(
-              `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,relative_humidity_2m,wind_speed_10m,weather_code&daily=temperature_2m_max,temperature_2m_min&timezone=auto&forecast_days=1`,
-            ),
-          ]);
+        // Show a location immediately, so the card is never "unavailable"
+        const fallbackLabel = usingDefault
+          ? DEFAULT_LOCATION_LABEL
+          : coordLabel(latitude, longitude);
+        if (mounted) {
+          setWeather((prev) => ({ ...prev, location: fallbackLabel }));
+        }
+
+        // Location label and weather run independently
+        const labelPromise = resolveLocationLabel(latitude, longitude).then(
+          (label) => {
+            const finalLabel =
+              usingDefault && label === coordLabel(latitude, longitude)
+                ? DEFAULT_LOCATION_LABEL
+                : label;
+            if (mounted) {
+              setWeather((prev) => ({ ...prev, location: finalLabel }));
+            }
+            return finalLabel;
+          },
+        );
+
+        try {
+          const weatherResponse = await fetch(
+            `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,relative_humidity_2m,wind_speed_10m,weather_code&daily=temperature_2m_max,temperature_2m_min&timezone=auto&forecast_days=1`,
+          );
 
           if (!weatherResponse.ok) {
             throw new Error(
@@ -408,6 +493,7 @@ export default function HomeScreen() {
 
           const current = payload.current;
           const parsed = weatherFromCode(current?.weather_code);
+          const label = await labelPromise;
 
           if (!mounted) return;
 
@@ -430,17 +516,19 @@ export default function HomeScreen() {
               typeof payload.daily?.temperature_2m_max?.[0] === "number"
                 ? `${Math.round(payload.daily.temperature_2m_min[0])}° / ${Math.round(payload.daily.temperature_2m_max[0])}°`
                 : "-- / --",
-            location: formatLocationLabel(reverseGeocode, latitude, longitude),
+            location: label,
             icon: parsed.icon,
             iconColor: parsed.iconColor,
           });
-        } catch {
+        } catch (e) {
+          console.error("Weather load failed", e);
           if (!mounted) return;
-          setWeather(DEFAULT_WEATHER);
+          // Keep the resolved location; only the weather values are unavailable
+          const label = await labelPromise;
+          if (!mounted) return;
+          setWeather({ ...DEFAULT_WEATHER, location: label });
         } finally {
-          if (mounted) {
-            setIsWeatherLoading(false);
-          }
+          if (mounted) setIsWeatherLoading(false);
         }
       };
 
