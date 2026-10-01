@@ -581,7 +581,7 @@ const styles = StyleSheet.create({
   successOverlay: {
     position: "absolute",
     right: 0,
-    bottom: 104,
+    top: 64,
     left: 0,
     alignItems: "center",
     paddingHorizontal: 16,
