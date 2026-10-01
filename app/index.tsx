@@ -220,8 +220,7 @@ const CROP_CARDS: CropCard[] = [
   {
     title: "Les céréales",
     status: "3 cultures",
-    image:
-      "https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=900&q=80",
+    image: require("../assets/images/cereales.jpg"),
     accent: "#2D5A27",
     route: "/cereales",
   },
@@ -235,16 +234,14 @@ const CROP_CARDS: CropCard[] = [
   {
     title: "Les cultures fourragères",
     status: "Sous suivi",
-    image:
-      "https://images.unsplash.com/photo-1500595046743-cd271d694d30?auto=format&fit=crop&w=900&q=80",
+    image: require("../assets/images/cultures-fourrageres.jpg"),
     accent: "#6b8f72",
     route: "/cultures-fourrageres",
   },
   {
     title: "Les légumes",
     status: "En croissance",
-    image:
-      "https://images.unsplash.com/photo-1464226184884-fa280b87c399?auto=format&fit=crop&w=900&q=80",
+    image: require("../assets/images/legumes.jpg"),
     accent: "#b71c1c",
     route: "/legumes",
   },
