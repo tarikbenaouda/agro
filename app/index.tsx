@@ -5,8 +5,8 @@ import MaskedView from "@react-native-masked-view/masked-view";
 import { BlurTargetView, BlurView } from "expo-blur";
 import { LinearGradient } from "expo-linear-gradient";
 import * as Location from "expo-location";
-import { router, useFocusEffect } from "expo-router";
-import React, { useCallback, useRef, useState } from "react";
+import { router, usePathname } from "expo-router";
+import React, { useEffect, useRef, useState } from "react";
 import {
   Image,
   ImageSourcePropType,
@@ -404,6 +404,7 @@ const EdgeBlur = ({
 
 export default function HomeScreen() {
   const insets = useSafeAreaInsets();
+  const pathname = usePathname();
   const [weather, setWeather] = useState<WeatherSnapshot>(DEFAULT_WEATHER);
   const [isWeatherLoading, setIsWeatherLoading] = useState(true);
   const [dailyTasks] = useState<DailyTask[]>(createDailyTasks);
@@ -412,130 +413,132 @@ export default function HomeScreen() {
   const [selectedProjectId, setSelectedProjectId] = useState(PROJECTS[0].id);
 
   const cropCarouselRef = useRef<View>(null);
+  const weatherRequestId = useRef(0);
 
-  useFocusEffect(
-    useCallback(() => {
-      let mounted = true;
+  useEffect(() => {
+    if (pathname !== "/") return;
 
-      const loadWeather = async () => {
-        setIsWeatherLoading(true);
+    const requestId = ++weatherRequestId.current;
+    let mounted = true;
 
-        // Resolve coordinates (saved -> default)
-        let latitude = DEFAULT_COORD.latitude;
-        let longitude = DEFAULT_COORD.longitude;
-        let usingDefault = true;
+    const loadWeather = async () => {
+      setIsWeatherLoading(true);
 
-        try {
-          const savedLoc = await AsyncStorage.getItem("selectedLocation");
-          if (savedLoc) {
-            const loc = JSON.parse(savedLoc);
-            if (
-              typeof loc.latitude === "number" &&
-              typeof loc.longitude === "number"
-            ) {
-              latitude = loc.latitude;
-              longitude = loc.longitude;
-              usingDefault = false;
-            }
+      // Resolve coordinates (saved -> default)
+      let latitude = DEFAULT_COORD.latitude;
+      let longitude = DEFAULT_COORD.longitude;
+      let usingDefault = true;
+
+      try {
+        const savedLoc = await AsyncStorage.getItem("selectedLocation");
+        if (savedLoc) {
+          const loc = JSON.parse(savedLoc);
+          if (
+            typeof loc.latitude === "number" &&
+            typeof loc.longitude === "number"
+          ) {
+            latitude = loc.latitude;
+            longitude = loc.longitude;
+            usingDefault = false;
           }
-        } catch (e) {
-          console.error("Failed to load location from storage", e);
         }
+      } catch (e) {
+        console.error("Failed to load location from storage", e);
+      }
 
-        // Show a location immediately, so the card is never "unavailable"
-        const fallbackLabel = usingDefault
-          ? DEFAULT_LOCATION_LABEL
-          : coordLabel(latitude, longitude);
-        if (mounted) {
-          setWeather((prev) => ({ ...prev, location: fallbackLabel }));
-        }
+      // Show a location immediately, so the card is never "unavailable"
+      const fallbackLabel = usingDefault
+        ? DEFAULT_LOCATION_LABEL
+        : coordLabel(latitude, longitude);
+      if (mounted) {
+        setWeather((prev) => ({ ...prev, location: fallbackLabel }));
+      }
 
-        // Location label and weather run independently
-        const labelPromise = resolveLocationLabel(latitude, longitude).then(
-          (label) => {
-            const finalLabel =
-              usingDefault && label === coordLabel(latitude, longitude)
-                ? DEFAULT_LOCATION_LABEL
-                : label;
-            if (mounted) {
-              setWeather((prev) => ({ ...prev, location: finalLabel }));
-            }
-            return finalLabel;
-          },
+      // Location label and weather run independently
+      const labelPromise = resolveLocationLabel(latitude, longitude).then(
+        (label) => {
+          const finalLabel =
+            usingDefault && label === coordLabel(latitude, longitude)
+              ? DEFAULT_LOCATION_LABEL
+              : label;
+          if (mounted && requestId === weatherRequestId.current) {
+            setWeather((prev) => ({ ...prev, location: finalLabel }));
+          }
+          return finalLabel;
+        },
+      );
+
+      try {
+        const weatherResponse = await fetch(
+          `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,relative_humidity_2m,wind_speed_10m,weather_code&daily=temperature_2m_max,temperature_2m_min&timezone=auto&forecast_days=1`,
         );
 
-        try {
-          const weatherResponse = await fetch(
-            `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,relative_humidity_2m,wind_speed_10m,weather_code&daily=temperature_2m_max,temperature_2m_min&timezone=auto&forecast_days=1`,
-          );
-
-          if (!weatherResponse.ok) {
-            throw new Error(
-              `Weather request failed (${weatherResponse.status})`,
-            );
-          }
-
-          const payload: {
-            current?: {
-              temperature_2m?: number;
-              relative_humidity_2m?: number;
-              wind_speed_10m?: number;
-              weather_code?: number;
-            };
-            daily?: {
-              temperature_2m_max?: number[];
-              temperature_2m_min?: number[];
-            };
-          } = await weatherResponse.json();
-
-          const current = payload.current;
-          const parsed = weatherFromCode(current?.weather_code);
-          const label = await labelPromise;
-
-          if (!mounted) return;
-
-          setWeather({
-            temperature:
-              typeof current?.temperature_2m === "number"
-                ? `${Math.round(current.temperature_2m)}°C`
-                : "--°C",
-            condition: parsed.condition,
-            humidity:
-              typeof current?.relative_humidity_2m === "number"
-                ? `${Math.round(current.relative_humidity_2m)}%`
-                : "--",
-            wind:
-              typeof current?.wind_speed_10m === "number"
-                ? `${Math.round(current.wind_speed_10m)} km/h`
-                : "--",
-            todayRange:
-              typeof payload.daily?.temperature_2m_min?.[0] === "number" &&
-              typeof payload.daily?.temperature_2m_max?.[0] === "number"
-                ? `${Math.round(payload.daily.temperature_2m_min[0])}° / ${Math.round(payload.daily.temperature_2m_max[0])}°`
-                : "-- / --",
-            location: label,
-            icon: parsed.icon,
-            iconColor: parsed.iconColor,
-          });
-        } catch (e) {
-          console.error("Weather load failed", e);
-          if (!mounted) return;
-          // Keep the resolved location; only the weather values are unavailable
-          const label = await labelPromise;
-          if (!mounted) return;
-          setWeather({ ...DEFAULT_WEATHER, location: label });
-        } finally {
-          if (mounted) setIsWeatherLoading(false);
+        if (!weatherResponse.ok) {
+          throw new Error(`Weather request failed (${weatherResponse.status})`);
         }
-      };
 
-      void loadWeather();
+        const payload: {
+          current?: {
+            temperature_2m?: number;
+            relative_humidity_2m?: number;
+            wind_speed_10m?: number;
+            weather_code?: number;
+          };
+          daily?: {
+            temperature_2m_max?: number[];
+            temperature_2m_min?: number[];
+          };
+        } = await weatherResponse.json();
 
-      return () => {
-        mounted = false;
-      };
-    }, []),
-  );
+        const current = payload.current;
+        const parsed = weatherFromCode(current?.weather_code);
+        const label = await labelPromise;
+
+        if (!mounted || requestId !== weatherRequestId.current) return;
+
+        setWeather({
+          temperature:
+            typeof current?.temperature_2m === "number"
+              ? `${Math.round(current.temperature_2m)}°C`
+              : "--°C",
+          condition: parsed.condition,
+          humidity:
+            typeof current?.relative_humidity_2m === "number"
+              ? `${Math.round(current.relative_humidity_2m)}%`
+              : "--",
+          wind:
+            typeof current?.wind_speed_10m === "number"
+              ? `${Math.round(current.wind_speed_10m)} km/h`
+              : "--",
+          todayRange:
+            typeof payload.daily?.temperature_2m_min?.[0] === "number" &&
+            typeof payload.daily?.temperature_2m_max?.[0] === "number"
+              ? `${Math.round(payload.daily.temperature_2m_min[0])}° / ${Math.round(payload.daily.temperature_2m_max[0])}°`
+              : "-- / --",
+          location: label,
+          icon: parsed.icon,
+          iconColor: parsed.iconColor,
+        });
+      } catch (e) {
+        console.error("Weather load failed", e);
+        if (!mounted) return;
+        // Keep the resolved location; only the weather values are unavailable
+        const label = await labelPromise;
+        if (!mounted || requestId !== weatherRequestId.current) return;
+        setWeather({ ...DEFAULT_WEATHER, location: label });
+      } finally {
+        if (mounted && requestId === weatherRequestId.current) {
+          setIsWeatherLoading(false);
+        }
+      }
+    };
+
+    void loadWeather();
+
+    return () => {
+      mounted = false;
+    };
+  }, [pathname]);
 
   const openCrop = (route?: CropRoute) => {
     if (!route) return;
