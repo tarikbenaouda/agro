@@ -649,7 +649,8 @@ export default function HomeScreen() {
                   style={styles.projAddButton}
                   activeOpacity={0.85}
                   onPress={() => {
-                    // Prototype: intentionally does nothing
+                    setShowProjects(false);
+                    router.push("/project-types");
                   }}
                 >
                   <Ionicons name="add" size={20} color="#ffffff" />
