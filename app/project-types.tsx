@@ -63,14 +63,17 @@ export default function ProjectTypesScreen() {
   const [selectedWilaya, setSelectedWilaya] = useState("");
   const [isWilayaPickerOpen, setIsWilayaPickerOpen] = useState(false);
   const [landSize, setLandSize] = useState("");
+  const [name, setName] = useState("");
   const [description, setDescription] = useState("");
-  const [email, setEmail] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
   const [isSending, setIsSending] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
+  const requestTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const successTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     return () => {
+      if (requestTimer.current) clearTimeout(requestTimer.current);
       if (successTimer.current) clearTimeout(successTimer.current);
     };
   }, []);
@@ -87,13 +90,14 @@ export default function ProjectTypesScreen() {
     setIsSending(true);
     setIsWilayaPickerOpen(false);
 
-    setTimeout(() => {
+    requestTimer.current = setTimeout(() => {
       setIsSending(false);
       setSelectedProject(null);
       setLandSize("");
       setSelectedWilaya("");
+      setName("");
       setDescription("");
-      setEmail("");
+      setPhoneNumber("");
       setShowSuccess(true);
       successTimer.current = setTimeout(() => setShowSuccess(false), 5000);
     }, 2000);
@@ -204,14 +208,24 @@ export default function ProjectTypesScreen() {
                 prochainement.
               </Text>
 
-              <Text style={styles.fieldLabel}>Superficie du terrain</Text>
+              <Text style={styles.fieldLabel}>Nom complet</Text>
               <TextInput
                 style={styles.input}
-                value={landSize}
-                onChangeText={setLandSize}
-                placeholder="Ex. 2 hectares"
+                value={name}
+                onChangeText={setName}
+                placeholder="Votre nom et prénom"
                 placeholderTextColor="#9caf9b"
-                keyboardType="decimal-pad"
+                autoCapitalize="words"
+              />
+
+              <Text style={styles.fieldLabel}>Numéro de téléphone</Text>
+              <TextInput
+                style={styles.input}
+                value={phoneNumber}
+                onChangeText={setPhoneNumber}
+                placeholder="Ex. 0550 12 34 56"
+                placeholderTextColor="#9caf9b"
+                keyboardType="phone-pad"
               />
 
               <Text style={styles.fieldLabel}>Wilaya</Text>
@@ -266,6 +280,20 @@ export default function ProjectTypesScreen() {
                 </View>
               ) : null}
 
+              {selectedProject?.title !== "Conseil agronomique" ? (
+                <>
+                  <Text style={styles.fieldLabel}>Superficie du terrain</Text>
+                  <TextInput
+                    style={styles.input}
+                    value={landSize}
+                    onChangeText={setLandSize}
+                    placeholder="Ex. 2 hectares"
+                    placeholderTextColor="#9caf9b"
+                    keyboardType="decimal-pad"
+                  />
+                </>
+              ) : null}
+
               <Text style={styles.fieldLabel}>Description</Text>
               <TextInput
                 style={[styles.input, styles.textArea]}
@@ -275,18 +303,6 @@ export default function ProjectTypesScreen() {
                 placeholderTextColor="#9caf9b"
                 multiline
                 textAlignVertical="top"
-              />
-
-              <Text style={styles.fieldLabel}>Adresse e-mail</Text>
-              <TextInput
-                style={styles.input}
-                value={email}
-                onChangeText={setEmail}
-                placeholder="vous@exemple.com"
-                placeholderTextColor="#9caf9b"
-                keyboardType="email-address"
-                autoCapitalize="none"
-                autoCorrect={false}
               />
 
               <TouchableOpacity
@@ -316,15 +332,24 @@ export default function ProjectTypesScreen() {
       </Modal>
 
       {showSuccess ? (
-        <View style={styles.successBar}>
-          <MaterialCommunityIcons
-            name="check-circle"
-            size={22}
-            color="#ffffff"
-          />
-          <Text style={styles.successText}>
-            Votre demande a été envoyée, notre équipe vous répondra bientôt.
-          </Text>
+        <View style={styles.successOverlay}>
+          <View style={styles.successBar}>
+            <MaterialCommunityIcons
+              name="check-circle"
+              size={22}
+              color={Colors.success}
+            />
+            <Text style={styles.successText}>
+              Votre demande a été envoyée, notre équipe vous répondra bientôt.
+            </Text>
+            <TouchableOpacity
+              style={styles.undoButton}
+              onPress={() => setShowSuccess(false)}
+              activeOpacity={0.75}
+            >
+              <Text style={styles.undoButtonText}>Annuler</Text>
+            </TouchableOpacity>
+          </View>
         </View>
       ) : null}
     </SafeAreaView>
@@ -553,30 +578,44 @@ const styles = StyleSheet.create({
     fontFamily: "Poppins_600SemiBold",
     fontSize: 13,
   },
-  successBar: {
+  successOverlay: {
     position: "absolute",
-    left: 16,
-    right: 16,
-    bottom: 112,
+    right: 0,
+    bottom: 104,
+    left: 0,
+    alignItems: "center",
+    paddingHorizontal: 16,
+  },
+  successBar: {
     flexDirection: "row",
     alignItems: "center",
     gap: 10,
     minHeight: 58,
+    width: "100%",
     borderRadius: 14,
-    backgroundColor: "#2e7d32",
+    backgroundColor: "#ffffff",
     paddingHorizontal: 16,
     paddingVertical: 10,
     shadowColor: "#000",
-    shadowOpacity: 0.16,
-    shadowRadius: 10,
-    shadowOffset: { width: 0, height: 4 },
-    elevation: 6,
+    shadowOpacity: 0.18,
+    shadowRadius: 18,
+    shadowOffset: { width: 0, height: 7 },
+    elevation: 8,
   },
   successText: {
     flex: 1,
-    color: "#ffffff",
-    fontFamily: "Poppins_600SemiBold",
+    color: "#254528",
+    fontFamily: "Poppins_400Regular",
     fontSize: 12,
     lineHeight: 18,
+  },
+  undoButton: {
+    paddingVertical: 7,
+    paddingHorizontal: 4,
+  },
+  undoButtonText: {
+    color: Colors.oliveAccent,
+    fontFamily: "Poppins_700Bold",
+    fontSize: 12,
   },
 });
